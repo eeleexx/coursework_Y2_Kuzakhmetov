@@ -1,0 +1,32 @@
+Sentiment Analysis Summary for INTC
+==================================================
+
+Total Articles: 1182
+Average Headline Sentiment: 0.013
+Average Summary Sentiment: 0.292
+Potential Clickbait Articles: 600
+
+Sentiment Distribution:
+headline_category
+Neutral          562
+Negative         235
+Positive         233
+Very Positive     88
+Very Negative     64
+Name: count, dtype: int64
+
+Most Positive Headlines:
+           date                                              title  headline_sentiment
+228  2020-10-13  10 Most Popular Dividend Stocks: Which Offer T...              0.9134
+133  2020-03-27  Intel: An Excellent Investment Opportunity For...              0.8360
+88   2019-11-07                      Intel: Better Lucky Than Good              0.8225
+242  2020-11-11      Intel: Rewarding Shareholders With Strong FCF              0.7717
+61   2019-07-23              Intel's Outlook May Help Boost Shares              0.7650
+
+Most Negative Headlines:
+           date                                              title  headline_sentiment
+731  2023-05-25  Intel: Fear When Others Are Fearful Because Fe...             -0.8625
+252  2020-12-14  Wintel Wars: Apple's Revenge On Microsoft And ...             -0.7906
+246  2020-11-22     If Intel Breaks $45 Then All Hell Breaks Loose             -0.7845
+589  2022-10-28                           Intel: From Bad To Worse             -0.7650
+927  2024-08-02                 Intel: Disaster Strikes, What Now?             -0.7650

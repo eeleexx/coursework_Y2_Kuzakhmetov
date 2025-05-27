@@ -1,0 +1,32 @@
+Sentiment Analysis Summary for PFE
+==================================================
+
+Total Articles: 447
+Average Headline Sentiment: 0.121
+Average Summary Sentiment: 0.513
+Potential Clickbait Articles: 239
+
+Sentiment Distribution:
+headline_category
+Neutral          200
+Positive         123
+Negative          57
+Very Positive     55
+Very Negative     12
+Name: count, dtype: int64
+
+Most Positive Headlines:
+           date                                              title  headline_sentiment
+114  2021-02-24  12 Reasons Novavax Beats Pfizer For Titles Of ...              0.8555
+261  2023-06-30  The Great Market Miscalculation: Pfizer's True...              0.8519
+51   2019-09-13  Pfizer Looks To Expand Market Opportunity For ...              0.8402
+170  2021-11-23  Pandemic Winner Pfizer Is About To Have Its Be...              0.8402
+446  2025-05-21  Pfizer Looks Like A Great Play At Current Valu...              0.8402
+
+Most Negative Headlines:
+           date                                              title  headline_sentiment
+290  2023-12-01  Pfizer: Disastrous 2023 Hits New Low With Weig...             -0.8910
+335  2024-05-06                 Pfizer: Ignore The Dead Cat Bounce             -0.7783
+108  2021-01-18  Pfizer: Weak Full-Year Earnings Estimate Hurts...             -0.7184
+67   2020-01-31  Pfizer Misses Target, Soft Guidance, And Other...             -0.7003
+400  2024-12-15               Pfizer: Irrational Anti-Vaccine Fear             -0.6808

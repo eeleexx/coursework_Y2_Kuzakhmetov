@@ -1,0 +1,32 @@
+Sentiment Analysis Summary for JNJ
+==================================================
+
+Total Articles: 321
+Average Headline Sentiment: 0.110
+Average Summary Sentiment: 0.412
+Potential Clickbait Articles: 152
+
+Sentiment Distribution:
+headline_category
+Neutral          145
+Positive          88
+Negative          39
+Very Positive     37
+Very Negative     12
+Name: count, dtype: int64
+
+Most Positive Headlines:
+           date                                              title  headline_sentiment
+93   2020-10-13  10 Most Popular Dividend Stocks: Which Offer T...              0.9134
+311  2025-02-18  Johnson & Johnson: Rich History Of Excellence ...              0.8658
+236  2023-07-06  Johnson & Johnson: Supplemental BLA Of Carvykt...              0.8591
+15   2019-04-11  Johnson & Johnson: Solid, Stable Returns, But ...              0.8201
+303  2025-01-07  Johnson & Johnson: A Potential Beneficiary Of ...              0.8020
+
+Most Negative Headlines:
+           date                                              title  headline_sentiment
+40   2019-09-17     Johnson & Johnson's Dead Serious Opioid Issues             -0.6808
+60   2020-02-25            Johnson & Johnson: Solid, But Not Great             -0.6299
+62   2020-03-09  Johnson & Johnson Remicade Biosim Setback, And...             -0.5994
+71   2020-04-19  COVID-19 Collaboration For Johnson & Johnson's...             -0.5994
+216  2023-04-03     Johnson & Johnson: Negative Alpha Likely Ahead             -0.5719

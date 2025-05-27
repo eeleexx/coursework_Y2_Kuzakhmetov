@@ -1,0 +1,37 @@
+AMD vs Intel Performance Analysis
+================================
+
+Overall (2019-01-01 to 2023-12-31):
+AMD Performance Change: 682.85%
+Intel Performance Change: 22.38%
+Relative Difference: 660.47%
+
+Ryzen 7000 Launch (2022-09-01 to 2022-12-31):
+AMD Performance Change: -21.33%
+Intel Performance Change: -15.66%
+Relative Difference: -5.67%
+
+X3D Launch (2023-02-01 to 2023-05-31):
+AMD Performance Change: 39.66%
+Intel Performance Change: 9.92%
+Relative Difference: 29.74%
+
+
+CPU-Related News Summary:
+========================
+Total AMD CPU-related news: 272
+Total Intel CPU-related news: 237
+
+Recent AMD CPU News:
+2025-05-23: AMD: Valuation Is Attractive Now, Shifting To Buy (Rating Upgrade)
+2025-05-21: AMD's Runner-Up Position Remains A Viable Rebound Story
+2025-05-16: AMD's AI Strategy Sprints Past Intel, Firmly In The Fast Lane
+2025-05-12: AMD Is Quietly Catching Nvidia - Wall Street Just Doesn't See It Yet
+2025-05-12: AMD: Strong Upside Potential If U.S.-China Trade Talks Turn Constructive
+
+Recent Intel CPU News:
+2025-05-20: Intel Is Having An Existential Crisis And Risks Losing More Market Share
+2025-05-13: Intel's Massive Layoffs Speak Opportunity
+2025-05-09: Intel: 2025 Will Be A Rebound Year
+2025-05-05: Intel: Undervalued Even Without A Turnaround
+2025-04-30: Intel Pushes Foundry Business Forward

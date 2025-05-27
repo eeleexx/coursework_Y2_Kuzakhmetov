@@ -1,0 +1,32 @@
+Sentiment Analysis Summary for JPM
+==================================================
+
+Total Articles: 360
+Average Headline Sentiment: 0.139
+Average Summary Sentiment: 0.464
+Potential Clickbait Articles: 178
+
+Sentiment Distribution:
+headline_category
+Neutral          166
+Positive          73
+Very Positive     68
+Negative          38
+Very Negative     15
+Name: count, dtype: int64
+
+Most Positive Headlines:
+           date                                              title  headline_sentiment
+88   2020-10-13  10 Most Popular Dividend Stocks: Which Offer T...              0.9134
+239  2023-05-01  Never Waste A Crisis: JPMorgan Gets First Repu...              0.8328
+40   2019-10-16  A Very Healthy Consumer And Strong Execution B...              0.8268
+6    2019-02-27  The Strong Look To Get Stronger As JPMorgan Co...              0.8176
+308  2024-07-15  JPMorgan Chase: Likely Fairly Valued, But Well...              0.8151
+
+Most Negative Headlines:
+           date                                              title  headline_sentiment
+25   2019-07-16     JPMorgan: The Threat Of A New Financial Crisis             -0.8176
+237  2023-04-15     JPMorgan's Q1: See, There Is No Banking Crisis             -0.7430
+194  2022-10-14  JPMorgan Chase Wards Off Recession Fears To De...             -0.6808
+348  2025-04-04  JPMorgan Chase: Real Catalyst Might Be Panic, ...             -0.6688
+202  2022-10-26  JPMorgan Chase: Don't Rule Out The Impact Of A...             -0.6597

@@ -1,0 +1,32 @@
+Sentiment Analysis Summary for AMD
+==================================================
+
+Total Articles: 1080
+Average Headline Sentiment: 0.091
+Average Summary Sentiment: 0.458
+Potential Clickbait Articles: 553
+
+Sentiment Distribution:
+headline_category
+Neutral          491
+Positive         271
+Negative         150
+Very Positive    127
+Very Negative     41
+Name: count, dtype: int64
+
+Most Positive Headlines:
+            date                                              title  headline_sentiment
+149   2020-02-25  AMD Continues To Gain Market Share: A Good Sig...              0.8779
+378   2021-12-20  AMD: Add This Amazing Semiconductor Growth Sto...              0.8779
+109   2019-11-27  Melt-Up Alert: Amazon Rises, Intel Hurts Dell,...              0.8591
+1005  2025-03-19  AMD: The Margin Of Safety Gives A Fantastic Op...              0.8481
+341   2021-09-16  AMD Stock: One Of The Best Secular Growth Play...              0.8316
+
+Most Negative Headlines:
+           date                                              title  headline_sentiment
+766  2024-05-01  AMD Stock Is No Longer Dead Money (Rating Upgr...             -0.7579
+823  2024-08-06  AMD: Collapse Is Overstated - Consider Buying ...             -0.7506
+132  2020-01-27     AMD: Gloom And Doom Vs. To Infinity And Beyond             -0.7430
+83   2019-09-10    The Market Keeps Ignoring How Bad AMD Really Is             -0.7351
+373  2021-11-30  Intel Vs. AMD: Alder Lake Impresses But Intel ...             -0.7096

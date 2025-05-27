@@ -1,0 +1,32 @@
+Sentiment Analysis Summary for BAC
+==================================================
+
+Total Articles: 430
+Average Headline Sentiment: 0.094
+Average Summary Sentiment: 0.398
+Potential Clickbait Articles: 218
+
+Sentiment Distribution:
+headline_category
+Neutral          177
+Positive         118
+Negative          55
+Very Positive     52
+Very Negative     28
+Name: count, dtype: int64
+
+Most Positive Headlines:
+           date                                              title  headline_sentiment
+115  2020-10-13  10 Most Popular Dividend Stocks: Which Offer T...              0.9134
+142  2021-04-09  Bank Of America: Even After Its Strong Rally, ...              0.9022
+363  2024-04-27  Bank of America: Now Fairly Valued - H2'23 To ...              0.8591
+208  2022-08-22  Strong Earnings Growth Should Bring Bank Of Am...              0.8225
+104  2020-07-20  Bank Of America's Strong Credit Profile And Ea...              0.7783
+
+Most Negative Headlines:
+           date                                              title  headline_sentiment
+205  2022-07-23  Bank Of America: Fed Stress Tests Were A Disas...             -0.7845
+31   2019-05-30       How The Trade War Is Hurting Bank Of America             -0.7650
+0    2019-01-02  Buy Bank Of America: Recession Fears Are Overb...             -0.6808
+259  2023-03-27          Bank of America: An Irrational Fear Trade             -0.6808
+5    2019-01-17  Bank Of America: Be Fearful When Others Are Gr...             -0.6705
