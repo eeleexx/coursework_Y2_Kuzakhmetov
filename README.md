@@ -121,16 +121,6 @@ Detailed analysis results are available in the following directories:
    - Consider longer-term sentiment trends in healthcare sector
    - Focus on summary sentiment over headlines in banking sector
 
-## Project Structure
-- `src/` - Source code directory
-  - `data_collection/` - Scripts for collecting news and stock data
-  - `models/` - LSTM and KNN implementations
-  - `analysis/` - Statistical analysis tools
-  - `utils/` - Helper functions
-- `data/` - Data storage
-- `notebooks/` - Jupyter notebooks for analysis
-- `results/` - Output directory for results and visualizations
-
 ## Setup
 1. Create virtual environment:
 ```bash
@@ -142,13 +132,6 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```bash
 pip install -r requirements.txt
 ```
-
-## Features
-- News data collection from Seeking Alpha API (Financial Times API integration planned for future)
-- Sentiment analysis of headlines vs full content
-- Stock price prediction using LSTM and KNN
-- Statistical analysis (MSE, RMSE, MAE, Kolmogorov-Smirnov test)
-- Focus on 3 sectors with 2 companies each
 
 ## Data Collection
 - Headlines and first paragraphs from Seeking Alpha
