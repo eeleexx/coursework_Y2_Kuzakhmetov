@@ -4,6 +4,7 @@ from analysis.sentiment_analyzer import SentimentAnalyzer
 from analysis.sentiment_details import analyze_sentiment_details
 from analysis.competitor_analysis import analyze_cpu_competition
 from analysis.sector_visualization import create_sector_comparisons
+from analysis.knn_analysis import run_knn_analysis
 import pandas as pd
 import numpy as np
 import os
@@ -21,18 +22,47 @@ DATA_DIR = os.path.join(os.path.dirname(
     os.path.abspath(__file__)), '..', 'data')
 RESULTS_DIR = os.path.join(os.path.dirname(
     os.path.abspath(__file__)), '..', 'results')
-PLOTS_DIR = os.path.join(RESULTS_DIR, 'plots')
-SENTIMENT_DIR = os.path.join(RESULTS_DIR, 'sentiment')
-COMPETITION_DIR = os.path.join(RESULTS_DIR, 'competition')
-SECTOR_DIR = os.path.join(RESULTS_DIR, 'sectors')
+
+# VADER analysis results
+VADER_DIR = os.path.join(RESULTS_DIR, 'vader_analysis')
+VADER_PLOTS = os.path.join(VADER_DIR, 'plots')
+VADER_SENTIMENT = os.path.join(VADER_DIR, 'sentiment')
+VADER_COMPETITION = os.path.join(VADER_DIR, 'competition')
+VADER_SECTORS = os.path.join(VADER_DIR, 'sectors')
+
+# KNN analysis results
+KNN_DIR = os.path.join(RESULTS_DIR, 'knn_analysis')
+KNN_PLOTS = os.path.join(KNN_DIR, 'plots')
+KNN_MODELS = os.path.join(KNN_DIR, 'models')
+KNN_PREDICTIONS = os.path.join(KNN_DIR, 'predictions')
+
+# LSTM analysis results
+LSTM_DIR = os.path.join(RESULTS_DIR, 'lstm_analysis')
+LSTM_PLOTS = os.path.join(LSTM_DIR, 'plots')
+LSTM_MODELS = os.path.join(LSTM_DIR, 'models')
+LSTM_PREDICTIONS = os.path.join(LSTM_DIR, 'predictions')
 
 # Ensure directories exist
 os.makedirs(DATA_DIR, exist_ok=True)
-os.makedirs(RESULTS_DIR, exist_ok=True)
-os.makedirs(PLOTS_DIR, exist_ok=True)
-os.makedirs(SENTIMENT_DIR, exist_ok=True)
-os.makedirs(COMPETITION_DIR, exist_ok=True)
-os.makedirs(SECTOR_DIR, exist_ok=True)
+
+# VADER directories
+os.makedirs(VADER_DIR, exist_ok=True)
+os.makedirs(VADER_PLOTS, exist_ok=True)
+os.makedirs(VADER_SENTIMENT, exist_ok=True)
+os.makedirs(VADER_COMPETITION, exist_ok=True)
+os.makedirs(VADER_SECTORS, exist_ok=True)
+
+# KNN directories
+os.makedirs(KNN_DIR, exist_ok=True)
+os.makedirs(KNN_PLOTS, exist_ok=True)
+os.makedirs(KNN_MODELS, exist_ok=True)
+os.makedirs(KNN_PREDICTIONS, exist_ok=True)
+
+# LSTM directories
+os.makedirs(LSTM_DIR, exist_ok=True)
+os.makedirs(LSTM_PLOTS, exist_ok=True)
+os.makedirs(LSTM_MODELS, exist_ok=True)
+os.makedirs(LSTM_PREDICTIONS, exist_ok=True)
 
 
 def load_data() -> Tuple[pd.DataFrame, Dict[str, pd.DataFrame]]:
@@ -197,7 +227,7 @@ def analyze_sentiment_impact(stock_data: pd.DataFrame, news_data: Dict[str, pd.D
 
         plt.tight_layout()
         plt.savefig(os.path.join(
-            PLOTS_DIR, f'{symbol}_sentiment_analysis.png'))
+            VADER_PLOTS, f'{symbol}_sentiment_analysis.png'))
         plt.close()
 
         # Create additional plots
@@ -222,7 +252,7 @@ def analyze_sentiment_impact(stock_data: pd.DataFrame, news_data: Dict[str, pd.D
 
         plt.tight_layout()
         plt.savefig(os.path.join(
-            PLOTS_DIR, f'{symbol}_additional_analysis.png'))
+            VADER_PLOTS, f'{symbol}_additional_analysis.png'))
         plt.close()
 
 
@@ -230,17 +260,23 @@ def main():
     # Load data
     stock_data, news_data = load_data()
 
-    # Analyze sentiment impact
+    # Run VADER analysis
+    print("\nRunning VADER sentiment analysis...")
     analyze_sentiment_impact(stock_data, news_data)
+    analyze_sentiment_details(news_data, VADER_SENTIMENT)
+    analyze_cpu_competition(stock_data, news_data, VADER_COMPETITION)
+    create_sector_comparisons(stock_data, news_data, VADER_SECTORS)
 
-    # Generate detailed sentiment analysis
-    analyze_sentiment_details(news_data, SENTIMENT_DIR)
-
-    # Analyze AMD vs Intel competition
-    analyze_cpu_competition(stock_data, news_data, COMPETITION_DIR)
-
-    # Create sector comparisons
-    create_sector_comparisons(stock_data, news_data, SECTOR_DIR)
+    # Run KNN analysis
+    print("\nRunning KNN analysis...")
+    knn_results = run_knn_analysis(
+        stock_data=stock_data,
+        news_data=news_data,
+        symbols=SYMBOLS,
+        knn_dir=KNN_DIR,
+        prediction_type='classification',  # Predict direction (up/down)
+        force_rerun=True  # Force rerun to debug issues
+    )
 
 
 if __name__ == "__main__":

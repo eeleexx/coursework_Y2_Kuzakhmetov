@@ -1,0 +1,206 @@
+{
+    "AMD": {
+        "train_metrics": {
+            "Accuracy": 0.6926070038910506,
+            "Precision": 0.702660406885759,
+            "Recall": 0.6865443425076453,
+            "F1": 0.6945088940448569
+        },
+        "test_metrics": {
+            "Accuracy": 0.5062111801242236,
+            "Precision": 0.4846938775510204,
+            "Recall": 0.6209150326797386,
+            "F1": 0.5444126074498568
+        },
+        "feature_importance": {
+            "returns": 0.015527950310559036,
+            "returns_5d": -0.01552795031055898,
+            "returns_10d": 0.0031055900621118626,
+            "volatility_5d": 0.006211180124223614,
+            "volatility_10d": -0.009316770186335366,
+            "price_ma5_ratio": 0.03416149068322982,
+            "price_ma10_ratio": 0.03416149068322982,
+            "sentiment_ma3": -0.021739130434782594,
+            "sentiment_ma5": 0.018633540372670843,
+            "sentiment_ma10": -0.009316770186335366,
+            "sentiment_std3": 0.0031055900621118626,
+            "sentiment_std5": 0.0031055900621118626,
+            "news_volume_ma3": 0.018633540372670843,
+            "news_volume_ma5": 0.021739130434782594,
+            "sentiment_momentum": 0.02795031055900621
+        },
+        "data_points": 1607,
+        "training_size": 1285,
+        "test_size": 322
+    },
+    "BAC": {
+        "train_metrics": {
+            "Accuracy": 0.690809968847352,
+            "Precision": 0.6891891891891891,
+            "Recall": 0.7072419106317411,
+            "F1": 0.6980988593155893
+        },
+        "test_metrics": {
+            "Accuracy": 0.4968944099378882,
+            "Precision": 0.524390243902439,
+            "Recall": 0.5058823529411764,
+            "F1": 0.5149700598802395
+        },
+        "feature_importance": {
+            "returns": 0.018633540372670787,
+            "returns_5d": 0.03416149068322982,
+            "returns_10d": -0.006211180124223559,
+            "volatility_5d": 0.018633540372670787,
+            "volatility_10d": 0.02795031055900621,
+            "price_ma5_ratio": 0.009316770186335421,
+            "price_ma10_ratio": -0.0248447204968944,
+            "sentiment_ma3": 0.012422360248447173,
+            "sentiment_ma5": -0.015527950310559036,
+            "sentiment_ma10": 0.0,
+            "sentiment_std3": -0.02173913043478265,
+            "sentiment_std5": 0.0,
+            "news_volume_ma3": 0.04037267080745344,
+            "news_volume_ma5": 0.03726708074534163,
+            "sentiment_momentum": 0.03726708074534163
+        },
+        "data_points": 1606,
+        "training_size": 1284,
+        "test_size": 322
+    },
+    "INTC": {
+        "train_metrics": {
+            "Accuracy": 0.6996108949416342,
+            "Precision": 0.7004470938897168,
+            "Recall": 0.7175572519083969,
+            "F1": 0.7088989441930619
+        },
+        "test_metrics": {
+            "Accuracy": 0.4906832298136646,
+            "Precision": 0.45121951219512196,
+            "Recall": 0.5,
+            "F1": 0.47435897435897434
+        },
+        "feature_importance": {
+            "returns": 0.009316770186335366,
+            "returns_5d": -0.012422360248447173,
+            "returns_10d": -0.018633540372670787,
+            "volatility_5d": -0.059006211180124224,
+            "volatility_10d": 0.01552795031055898,
+            "price_ma5_ratio": 0.01552795031055898,
+            "price_ma10_ratio": 0.021739130434782594,
+            "sentiment_ma3": 0.009316770186335366,
+            "sentiment_ma5": 0.0,
+            "sentiment_ma10": 0.0,
+            "sentiment_std3": -0.03416149068322988,
+            "sentiment_std5": 0.0,
+            "news_volume_ma3": 0.0,
+            "news_volume_ma5": 0.0248447204968944,
+            "sentiment_momentum": -0.006211180124223614
+        },
+        "data_points": 1607,
+        "training_size": 1285,
+        "test_size": 322
+    },
+    "JNJ": {
+        "train_metrics": {
+            "Accuracy": 0.6830218068535826,
+            "Precision": 0.6816208393632417,
+            "Recall": 0.71580547112462,
+            "F1": 0.698295033358043
+        },
+        "test_metrics": {
+            "Accuracy": 0.4813664596273292,
+            "Precision": 0.5182481751824818,
+            "Recall": 0.4127906976744186,
+            "F1": 0.459546925566343
+        },
+        "feature_importance": {
+            "returns": -0.009316770186335366,
+            "returns_5d": -0.02173913043478254,
+            "returns_10d": 0.003105590062111807,
+            "volatility_5d": 0.0,
+            "volatility_10d": 0.02173913043478265,
+            "price_ma5_ratio": 0.006211180124223614,
+            "price_ma10_ratio": -0.009316770186335366,
+            "sentiment_ma3": -0.04037267080745338,
+            "sentiment_ma5": -0.003105590062111807,
+            "sentiment_ma10": 0.015527950310559036,
+            "sentiment_std3": 0.02173913043478265,
+            "sentiment_std5": 0.006211180124223614,
+            "news_volume_ma3": -0.003105590062111807,
+            "news_volume_ma5": -0.012422360248447173,
+            "sentiment_momentum": -0.04037267080745338
+        },
+        "data_points": 1606,
+        "training_size": 1284,
+        "test_size": 322
+    },
+    "JPM": {
+        "train_metrics": {
+            "Accuracy": 0.7032710280373832,
+            "Precision": 0.7004279600570613,
+            "Recall": 0.7416918429003021,
+            "F1": 0.7204695524578136
+        },
+        "test_metrics": {
+            "Accuracy": 0.531055900621118,
+            "Precision": 0.6114649681528662,
+            "Recall": 0.5161290322580645,
+            "F1": 0.5597667638483965
+        },
+        "feature_importance": {
+            "returns": 0.037267080745341574,
+            "returns_5d": 0.0031055900621117516,
+            "returns_10d": 0.009316770186335366,
+            "volatility_5d": 0.024844720496894346,
+            "volatility_10d": 0.03416149068322977,
+            "price_ma5_ratio": 0.01863354037267073,
+            "price_ma10_ratio": 0.037267080745341574,
+            "sentiment_ma3": 0.04037267080745338,
+            "sentiment_ma5": 0.009316770186335366,
+            "sentiment_ma10": -0.012422360248447228,
+            "sentiment_std3": 0.021739130434782594,
+            "sentiment_std5": -0.009316770186335477,
+            "news_volume_ma3": 0.0031055900621117516,
+            "news_volume_ma5": 0.02795031055900621,
+            "sentiment_momentum": 0.03416149068322977
+        },
+        "data_points": 1606,
+        "training_size": 1284,
+        "test_size": 322
+    },
+    "PFE": {
+        "train_metrics": {
+            "Accuracy": 0.692367601246106,
+            "Precision": 0.7003610108303249,
+            "Recall": 0.6288492706645057,
+            "F1": 0.6626814688300597
+        },
+        "test_metrics": {
+            "Accuracy": 0.5434782608695652,
+            "Precision": 0.5337837837837838,
+            "Recall": 0.5031847133757962,
+            "F1": 0.5180327868852459
+        },
+        "feature_importance": {
+            "returns": 0.0714285714285714,
+            "returns_5d": 0.03105590062111796,
+            "returns_10d": 0.046583850931676996,
+            "volatility_5d": 0.024844720496894346,
+            "volatility_10d": 0.03105590062111796,
+            "price_ma5_ratio": 0.024844720496894346,
+            "price_ma10_ratio": 0.046583850931676996,
+            "sentiment_ma3": 0.01552795031055898,
+            "sentiment_ma5": 0.03416149068322982,
+            "sentiment_ma10": 0.05900621118012417,
+            "sentiment_std3": 0.04347826086956519,
+            "sentiment_std5": 0.05590062111801242,
+            "news_volume_ma3": 0.05590062111801242,
+            "news_volume_ma5": 0.021739130434782594,
+            "sentiment_momentum": 0.05279503105590061
+        },
+        "data_points": 1606,
+        "training_size": 1284,
+        "test_size": 322
+    }
+}
