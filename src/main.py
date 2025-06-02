@@ -1,21 +1,30 @@
-from models.lstm_model import StockLSTM
-from models.knn_model import StockKNN
-from analysis.sentiment_analyzer import SentimentAnalyzer
-from analysis.sentiment_details import analyze_sentiment_details
-from analysis.competitor_analysis import analyze_cpu_competition
-from analysis.sector_visualization import create_sector_comparisons
-from analysis.knn_analysis import run_knn_analysis
-import pandas as pd
-import numpy as np
-import os
-from datetime import datetime
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-from scipy import stats
-import matplotlib.pyplot as plt
-import seaborn as sns
-from typing import Dict, List, Tuple
 import json
+from typing import Dict, List, Tuple
+import seaborn as sns
+import matplotlib.pyplot as plt
+from scipy import stats
+from datetime import datetime
+import numpy as np
+import pandas as pd
+from analysis.knn_analysis import run_knn_analysis
+from analysis.sector_visualization import create_sector_comparisons
+from analysis.competitor_analysis import analyze_cpu_competition
+from analysis.sentiment_details import analyze_sentiment_details
+from analysis.sentiment_analyzer import SentimentAnalyzer
+from models.knn_model import StockKNN
+from models.lstm_model import StockLSTM
+import os
+import sys
+import logging
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # FATAL only
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+
+stderr = sys.stderr
+sys.stderr = open(os.devnull, 'w')
+
+
+sys.stderr = stderr
 
 SYMBOLS = ['AMD', 'BAC', 'INTC', 'JNJ', 'JPM', 'PFE']
 DATA_DIR = os.path.join(os.path.dirname(
@@ -28,16 +37,15 @@ VADER_PLOTS = os.path.join(VADER_DIR, 'plots')
 VADER_SENTIMENT = os.path.join(VADER_DIR, 'sentiment')
 VADER_COMPETITION = os.path.join(VADER_DIR, 'competition')
 VADER_SECTORS = os.path.join(VADER_DIR, 'sectors')
+VADER_PREDICTIONS = os.path.join(VADER_DIR, 'predictions')
 
 KNN_DIR = os.path.join(RESULTS_DIR, 'knn_analysis')
 KNN_PLOTS = os.path.join(KNN_DIR, 'plots')
 KNN_MODELS = os.path.join(KNN_DIR, 'models')
-KNN_PREDICTIONS = os.path.join(KNN_DIR, 'predictions')
 
 LSTM_DIR = os.path.join(RESULTS_DIR, 'lstm_analysis')
 LSTM_PLOTS = os.path.join(LSTM_DIR, 'plots')
 LSTM_MODELS = os.path.join(LSTM_DIR, 'models')
-LSTM_PREDICTIONS = os.path.join(LSTM_DIR, 'predictions')
 
 os.makedirs(DATA_DIR, exist_ok=True)
 
@@ -46,16 +54,15 @@ os.makedirs(VADER_PLOTS, exist_ok=True)
 os.makedirs(VADER_SENTIMENT, exist_ok=True)
 os.makedirs(VADER_COMPETITION, exist_ok=True)
 os.makedirs(VADER_SECTORS, exist_ok=True)
+os.makedirs(VADER_PREDICTIONS, exist_ok=True)
 
 os.makedirs(KNN_DIR, exist_ok=True)
 os.makedirs(KNN_PLOTS, exist_ok=True)
 os.makedirs(KNN_MODELS, exist_ok=True)
-os.makedirs(KNN_PREDICTIONS, exist_ok=True)
 
 os.makedirs(LSTM_DIR, exist_ok=True)
 os.makedirs(LSTM_PLOTS, exist_ok=True)
 os.makedirs(LSTM_MODELS, exist_ok=True)
-os.makedirs(LSTM_PREDICTIONS, exist_ok=True)
 
 
 def load_data() -> Tuple[pd.DataFrame, Dict[str, pd.DataFrame]]:
@@ -298,7 +305,7 @@ def run_lstm_analysis(stock_data: pd.DataFrame, news_data: Dict[str, pd.DataFram
         if len(symbol_stock) == 0:
             print(f"No stock data available for {symbol}")
             continue
-        
+
         symbol_stock['Date'] = pd.to_datetime(symbol_stock['Date'])
         symbol_news['date'] = pd.to_datetime(symbol_news['date'])
 
