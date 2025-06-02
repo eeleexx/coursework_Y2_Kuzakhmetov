@@ -1,7 +1,5 @@
-# Environment variables
 .env
 
-# Python
 __pycache__/
 *.py[cod]
 *$py.class
@@ -23,7 +21,6 @@ wheels/
 .installed.cfg
 *.egg
 
-# Virtual Environment
 venv/
 env/
 ENV/
@@ -31,15 +28,12 @@ ENV/
 env.bak/
 venv.bak/
 
-# Database files
 *.db
 *.sqlite3
 
-# Jupyter Notebook
 .ipynb_checkpoints
 *.ipynb
 
-# IDE
 .idea/
 .vscode/
 *.swp
@@ -50,7 +44,6 @@ venv.bak/
 .env.test.local
 .env.production.local
 
-# Logs and temporary files
 *.log
 logs/
 tmp/
@@ -62,37 +55,23 @@ coverage.xml
 *.cover
 *.py,cover
 
-# API keys and secrets
 .env.*
 !.env.example
 secrets.yaml
 config.yaml
 
-# Model files
 *.h5
 *.pkl
 *.model
 
-# Documentation
 docs/_build/
 site/
 
-# System Files
 .DS_Store
 Thumbs.db
 
-# Data files
-*.csv
-*.xlsx
-*.xls
-
-# Keep trained models and plots
 !results/knn_analysis/models/*.joblib
 !results/lstm_analysis/models/*.keras
 !results/lstm_analysis/plots/*.png
 !results/knn_analysis/plots/*.png
 
-# Exclude other results
-results/vader_analysis/
-results/knn_analysis/predictions/
-results/lstm_analysis/predictions/ 

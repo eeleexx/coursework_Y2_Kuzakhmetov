@@ -1,0 +1,512 @@
+{
+    "AMD": {
+        "group_tests": {
+            "length_311": {
+                "variations": [
+                    "price_only",
+                    "price_headline",
+                    "price_summary",
+                    "price_headline_summary"
+                ],
+                "kruskal_wallis": {
+                    "h_statistic": 121.08947424607095,
+                    "p_value": 4.495636301133992e-26
+                },
+                "ks_tests": {
+                    "price_only_vs_price_headline": {
+                        "ks_statistic": 0.3633440514469453,
+                        "p_value": 1.2186263635273933e-18
+                    },
+                    "price_only_vs_price_summary": {
+                        "ks_statistic": 0.04823151125401929,
+                        "p_value": 0.8631661679167535
+                    },
+                    "price_only_vs_price_headline_summary": {
+                        "ks_statistic": 0.03536977491961415,
+                        "p_value": 0.9902021154929185
+                    },
+                    "price_headline_vs_price_summary": {
+                        "ks_statistic": 0.33440514469453375,
+                        "p_value": 8.4701712243892425e-16
+                    },
+                    "price_headline_vs_price_headline_summary": {
+                        "ks_statistic": 0.36012861736334406,
+                        "p_value": 2.5964702418875115e-18
+                    },
+                    "price_summary_vs_price_headline_summary": {
+                        "ks_statistic": 0.04823151125401929,
+                        "p_value": 0.8631661679167535
+                    }
+                }
+            },
+            "length_229": {
+                "variations": [
+                    "price_headline_no_clickbait",
+                    "price_summary_no_clickbait",
+                    "price_headline_summary_no_clickbait"
+                ],
+                "kruskal_wallis": {
+                    "h_statistic": 9.99782967614101,
+                    "p_value": 0.006745262731310979
+                },
+                "ks_tests": {
+                    "price_headline_no_clickbait_vs_price_summary_no_clickbait": {
+                        "ks_statistic": 0.06550218340611354,
+                        "p_value": 0.7109051810650522
+                    },
+                    "price_headline_no_clickbait_vs_price_headline_summary_no_clickbait": {
+                        "ks_statistic": 0.11790393013100436,
+                        "p_value": 0.08284767240143329
+                    },
+                    "price_summary_no_clickbait_vs_price_headline_summary_no_clickbait": {
+                        "ks_statistic": 0.1572052401746725,
+                        "p_value": 0.00689270265489718
+                    }
+                }
+            }
+        },
+        "error_means": {
+            "price_only": 0.20907493353876422,
+            "price_headline": 0.09769495098349809,
+            "price_summary": 0.20117108962365068,
+            "price_headline_summary": 0.20078889909079184,
+            "price_headline_no_clickbait": 0.13657999101173687,
+            "price_summary_no_clickbait": 0.13117642783802178,
+            "price_headline_summary_no_clickbait": 0.1651258845940927
+        },
+        "error_stds": {
+            "price_only": 0.1803855580250496,
+            "price_headline": 0.08707043033500464,
+            "price_summary": 0.17776854355908242,
+            "price_headline_summary": 0.16442794434968813,
+            "price_headline_no_clickbait": 0.11634885964447883,
+            "price_summary_no_clickbait": 0.11302027829831683,
+            "price_headline_summary_no_clickbait": 0.13168731025151167
+        }
+    },
+    "INTC": {
+        "group_tests": {
+            "length_311": {
+                "variations": [
+                    "price_only",
+                    "price_headline",
+                    "price_summary",
+                    "price_headline_summary"
+                ],
+                "kruskal_wallis": {
+                    "h_statistic": 10.467684657012342,
+                    "p_value": 0.014981720710453979
+                },
+                "ks_tests": {
+                    "price_only_vs_price_headline": {
+                        "ks_statistic": 0.07395498392282958,
+                        "p_value": 0.36325992163671855
+                    },
+                    "price_only_vs_price_summary": {
+                        "ks_statistic": 0.04501607717041801,
+                        "p_value": 0.9116633190258564
+                    },
+                    "price_only_vs_price_headline_summary": {
+                        "ks_statistic": 0.1189710610932476,
+                        "p_value": 0.02442599770315224
+                    },
+                    "price_headline_vs_price_summary": {
+                        "ks_statistic": 0.10289389067524116,
+                        "p_value": 0.07427182511948836
+                    },
+                    "price_headline_vs_price_headline_summary": {
+                        "ks_statistic": 0.14790996784565916,
+                        "p_value": 0.0021881664906303827
+                    },
+                    "price_summary_vs_price_headline_summary": {
+                        "ks_statistic": 0.1189710610932476,
+                        "p_value": 0.02442599770315224
+                    }
+                }
+            },
+            "length_227": {
+                "variations": [
+                    "price_headline_no_clickbait",
+                    "price_summary_no_clickbait",
+                    "price_headline_summary_no_clickbait"
+                ],
+                "kruskal_wallis": {
+                    "h_statistic": 2.312370183142775,
+                    "p_value": 0.31468438602458004
+                },
+                "ks_tests": {
+                    "price_headline_no_clickbait_vs_price_summary_no_clickbait": {
+                        "ks_statistic": 0.09251101321585903,
+                        "p_value": 0.2862366201828205
+                    },
+                    "price_headline_no_clickbait_vs_price_headline_summary_no_clickbait": {
+                        "ks_statistic": 0.10572687224669604,
+                        "p_value": 0.1581989216364027
+                    },
+                    "price_summary_no_clickbait_vs_price_headline_summary_no_clickbait": {
+                        "ks_statistic": 0.06167400881057269,
+                        "p_value": 0.7822023342001542
+                    }
+                }
+            }
+        },
+        "error_means": {
+            "price_only": 0.07809545956088791,
+            "price_headline": 0.073323412148301,
+            "price_summary": 0.07824722191163001,
+            "price_headline_summary": 0.0892375479098641,
+            "price_headline_no_clickbait": 0.08772074952537419,
+            "price_summary_no_clickbait": 0.09174944325641306,
+            "price_headline_summary_no_clickbait": 0.09608615504178436
+        },
+        "error_stds": {
+            "price_only": 0.08384186700980523,
+            "price_headline": 0.0846477421215261,
+            "price_summary": 0.08170399994186857,
+            "price_headline_summary": 0.0876560484594128,
+            "price_headline_no_clickbait": 0.12114349410447078,
+            "price_summary_no_clickbait": 0.11932790976641013,
+            "price_headline_summary_no_clickbait": 0.11990650374789567
+        }
+    },
+    "JPM": {
+        "group_tests": {
+            "length_311": {
+                "variations": [
+                    "price_only",
+                    "price_headline",
+                    "price_summary",
+                    "price_headline_summary"
+                ],
+                "kruskal_wallis": {
+                    "h_statistic": 23.82091261625328,
+                    "p_value": 2.722547258947142e-05
+                },
+                "ks_tests": {
+                    "price_only_vs_price_headline": {
+                        "ks_statistic": 0.1607717041800643,
+                        "p_value": 0.000631538783377879
+                    },
+                    "price_only_vs_price_summary": {
+                        "ks_statistic": 0.1414790996784566,
+                        "p_value": 0.00391566633272144
+                    },
+                    "price_only_vs_price_headline_summary": {
+                        "ks_statistic": 0.1382636655948553,
+                        "p_value": 0.005186796779883666
+                    },
+                    "price_headline_vs_price_summary": {
+                        "ks_statistic": 0.07717041800643087,
+                        "p_value": 0.31298490785864264
+                    },
+                    "price_headline_vs_price_headline_summary": {
+                        "ks_statistic": 0.1157556270096463,
+                        "p_value": 0.030909937590251332
+                    },
+                    "price_summary_vs_price_headline_summary": {
+                        "ks_statistic": 0.08038585209003216,
+                        "p_value": 0.2677270821541831
+                    }
+                }
+            },
+            "length_284": {
+                "variations": [
+                    "price_headline_no_clickbait",
+                    "price_summary_no_clickbait",
+                    "price_headline_summary_no_clickbait"
+                ],
+                "kruskal_wallis": {
+                    "h_statistic": 3.2320020381521317,
+                    "p_value": 0.19869167670053847
+                },
+                "ks_tests": {
+                    "price_headline_no_clickbait_vs_price_summary_no_clickbait": {
+                        "ks_statistic": 0.028169014084507043,
+                        "p_value": 0.9998777179211568
+                    },
+                    "price_headline_no_clickbait_vs_price_headline_summary_no_clickbait": {
+                        "ks_statistic": 0.07746478873239436,
+                        "p_value": 0.3621424615409129
+                    },
+                    "price_summary_no_clickbait_vs_price_headline_summary_no_clickbait": {
+                        "ks_statistic": 0.0880281690140845,
+                        "p_value": 0.22138776184996115
+                    }
+                }
+            }
+        },
+        "error_means": {
+            "price_only": 0.12211232268741716,
+            "price_headline": 0.144913363340274,
+            "price_summary": 0.15878171335655467,
+            "price_headline_summary": 0.17142341718284307,
+            "price_headline_no_clickbait": 0.1444912896181617,
+            "price_summary_no_clickbait": 0.14333767394098915,
+            "price_headline_summary_no_clickbait": 0.16853084494283432
+        },
+        "error_stds": {
+            "price_only": 0.13209501605035295,
+            "price_headline": 0.12814398777545694,
+            "price_summary": 0.14766453588068584,
+            "price_headline_summary": 0.1647742392114848,
+            "price_headline_no_clickbait": 0.15692994266071458,
+            "price_summary_no_clickbait": 0.15583374817335985,
+            "price_headline_summary_no_clickbait": 0.1745398980168671
+        }
+    },
+    "BAC": {
+        "group_tests": {
+            "length_311": {
+                "variations": [
+                    "price_only",
+                    "price_headline",
+                    "price_summary",
+                    "price_headline_summary"
+                ],
+                "kruskal_wallis": {
+                    "h_statistic": 84.23673270640666,
+                    "p_value": 3.784282510066012e-18
+                },
+                "ks_tests": {
+                    "price_only_vs_price_headline": {
+                        "ks_statistic": 0.2861736334405145,
+                        "p_value": 1.2652264334209264e-11
+                    },
+                    "price_only_vs_price_summary": {
+                        "ks_statistic": 0.2861736334405145,
+                        "p_value": 1.2652264334209264e-11
+                    },
+                    "price_only_vs_price_headline_summary": {
+                        "ks_statistic": 0.2861736334405145,
+                        "p_value": 1.2652264334209264e-11
+                    },
+                    "price_headline_vs_price_summary": {
+                        "ks_statistic": 0.04180064308681672,
+                        "p_value": 0.9492494531122332
+                    },
+                    "price_headline_vs_price_headline_summary": {
+                        "ks_statistic": 0.04180064308681672,
+                        "p_value": 0.9492494531122332
+                    },
+                    "price_summary_vs_price_headline_summary": {
+                        "ks_statistic": 0.03536977491961415,
+                        "p_value": 0.9902021154929185
+                    }
+                }
+            },
+            "length_280": {
+                "variations": [
+                    "price_headline_no_clickbait",
+                    "price_summary_no_clickbait",
+                    "price_headline_summary_no_clickbait"
+                ],
+                "kruskal_wallis": {
+                    "h_statistic": 0.11894379868454052,
+                    "p_value": 0.9422620114014806
+                },
+                "ks_tests": {
+                    "price_headline_no_clickbait_vs_price_summary_no_clickbait": {
+                        "ks_statistic": 0.05,
+                        "p_value": 0.8760631634430929
+                    },
+                    "price_headline_no_clickbait_vs_price_headline_summary_no_clickbait": {
+                        "ks_statistic": 0.03571428571428571,
+                        "p_value": 0.9942384811715432
+                    },
+                    "price_summary_no_clickbait_vs_price_headline_summary_no_clickbait": {
+                        "ks_statistic": 0.05,
+                        "p_value": 0.8760631634430929
+                    }
+                }
+            }
+        },
+        "error_means": {
+            "price_only": 0.12712277805461764,
+            "price_headline": 0.0793859631344707,
+            "price_summary": 0.08019776889034774,
+            "price_headline_summary": 0.08237278982908429,
+            "price_headline_no_clickbait": 0.08216630837846046,
+            "price_summary_no_clickbait": 0.08047829105635362,
+            "price_headline_summary_no_clickbait": 0.08302480173705934
+        },
+        "error_stds": {
+            "price_only": 0.0996013118305903,
+            "price_headline": 0.08545221687119939,
+            "price_summary": 0.08673276056241609,
+            "price_headline_summary": 0.09115581309094495,
+            "price_headline_no_clickbait": 0.10376413110880335,
+            "price_summary_no_clickbait": 0.10287479625094502,
+            "price_headline_summary_no_clickbait": 0.1057519911751327
+        }
+    },
+    "JNJ": {
+        "group_tests": {
+            "length_311": {
+                "variations": [
+                    "price_only",
+                    "price_headline",
+                    "price_summary",
+                    "price_headline_summary"
+                ],
+                "kruskal_wallis": {
+                    "h_statistic": 0.490613705324904,
+                    "p_value": 0.9209486474227139
+                },
+                "ks_tests": {
+                    "price_only_vs_price_headline": {
+                        "ks_statistic": 0.03536977491961415,
+                        "p_value": 0.9902021154929185
+                    },
+                    "price_only_vs_price_summary": {
+                        "ks_statistic": 0.03215434083601286,
+                        "p_value": 0.997183210996725
+                    },
+                    "price_only_vs_price_headline_summary": {
+                        "ks_statistic": 0.05144694533762058,
+                        "p_value": 0.8058477373913538
+                    },
+                    "price_headline_vs_price_summary": {
+                        "ks_statistic": 0.04501607717041801,
+                        "p_value": 0.9116633190258564
+                    },
+                    "price_headline_vs_price_headline_summary": {
+                        "ks_statistic": 0.05787781350482315,
+                        "p_value": 0.6756635477326851
+                    },
+                    "price_summary_vs_price_headline_summary": {
+                        "ks_statistic": 0.04823151125401929,
+                        "p_value": 0.8631661679167535
+                    }
+                }
+            },
+            "length_286": {
+                "variations": [
+                    "price_headline_no_clickbait",
+                    "price_summary_no_clickbait",
+                    "price_headline_summary_no_clickbait"
+                ],
+                "kruskal_wallis": {
+                    "h_statistic": 0.27139131617377643,
+                    "p_value": 0.8731083155125257
+                },
+                "ks_tests": {
+                    "price_headline_no_clickbait_vs_price_summary_no_clickbait": {
+                        "ks_statistic": 0.045454545454545456,
+                        "p_value": 0.9298280414427716
+                    },
+                    "price_headline_no_clickbait_vs_price_headline_summary_no_clickbait": {
+                        "ks_statistic": 0.04895104895104895,
+                        "p_value": 0.8838744314405272
+                    },
+                    "price_summary_no_clickbait_vs_price_headline_summary_no_clickbait": {
+                        "ks_statistic": 0.038461538461538464,
+                        "p_value": 0.9843286097714243
+                    }
+                }
+            }
+        },
+        "error_means": {
+            "price_only": 0.07591111149807646,
+            "price_headline": 0.07717354206681057,
+            "price_summary": 0.07642627243314568,
+            "price_headline_summary": 0.07944618638937012,
+            "price_headline_no_clickbait": 0.07873705521029457,
+            "price_summary_no_clickbait": 0.07980402114781215,
+            "price_headline_summary_no_clickbait": 0.0810472051278465
+        },
+        "error_stds": {
+            "price_only": 0.07214092714499556,
+            "price_headline": 0.07429068927191106,
+            "price_summary": 0.07328168447628115,
+            "price_headline_summary": 0.07342209398516043,
+            "price_headline_no_clickbait": 0.07698901500311146,
+            "price_summary_no_clickbait": 0.07607249984773715,
+            "price_headline_summary_no_clickbait": 0.0764744604932757
+        }
+    },
+    "PFE": {
+        "group_tests": {
+            "length_311": {
+                "variations": [
+                    "price_only",
+                    "price_headline",
+                    "price_summary",
+                    "price_headline_summary"
+                ],
+                "kruskal_wallis": {
+                    "h_statistic": 0.5102685490983276,
+                    "p_value": 0.9166297336558755
+                },
+                "ks_tests": {
+                    "price_only_vs_price_headline": {
+                        "ks_statistic": 0.04823151125401929,
+                        "p_value": 0.8631661679167535
+                    },
+                    "price_only_vs_price_summary": {
+                        "ks_statistic": 0.04501607717041801,
+                        "p_value": 0.9116633190258564
+                    },
+                    "price_only_vs_price_headline_summary": {
+                        "ks_statistic": 0.07395498392282958,
+                        "p_value": 0.36325992163671855
+                    },
+                    "price_headline_vs_price_summary": {
+                        "ks_statistic": 0.04501607717041801,
+                        "p_value": 0.9116633190258564
+                    },
+                    "price_headline_vs_price_headline_summary": {
+                        "ks_statistic": 0.05466237942122187,
+                        "p_value": 0.7424189035942761
+                    },
+                    "price_summary_vs_price_headline_summary": {
+                        "ks_statistic": 0.04823151125401929,
+                        "p_value": 0.8631661679167535
+                    }
+                }
+            },
+            "length_273": {
+                "variations": [
+                    "price_headline_no_clickbait",
+                    "price_summary_no_clickbait",
+                    "price_headline_summary_no_clickbait"
+                ],
+                "kruskal_wallis": {
+                    "h_statistic": 85.21324820686914,
+                    "p_value": 3.1345720683761176e-19
+                },
+                "ks_tests": {
+                    "price_headline_no_clickbait_vs_price_summary_no_clickbait": {
+                        "ks_statistic": 0.24175824175824176,
+                        "p_value": 2.066984625617697e-07
+                    },
+                    "price_headline_no_clickbait_vs_price_headline_summary_no_clickbait": {
+                        "ks_statistic": 0.15018315018315018,
+                        "p_value": 0.00418466792011009
+                    },
+                    "price_summary_no_clickbait_vs_price_headline_summary_no_clickbait": {
+                        "ks_statistic": 0.3663003663003663,
+                        "p_value": 1.1161158244292583e-16
+                    }
+                }
+            }
+        },
+        "error_means": {
+            "price_only": 0.047357523953413125,
+            "price_headline": 0.048627092698180545,
+            "price_summary": 0.04775771164535293,
+            "price_headline_summary": 0.05023459560772364,
+            "price_headline_no_clickbait": 0.07063140300507303,
+            "price_summary_no_clickbait": 0.11255966447639357,
+            "price_headline_summary_no_clickbait": 0.054186568229137644
+        },
+        "error_stds": {
+            "price_only": 0.03984452018966181,
+            "price_headline": 0.03993374421729837,
+            "price_summary": 0.04051570817576067,
+            "price_headline_summary": 0.04245716687834501,
+            "price_headline_no_clickbait": 0.05568308559881594,
+            "price_summary_no_clickbait": 0.0871131641485431,
+            "price_headline_summary_no_clickbait": 0.04666783278072618
+        }
+    }
+}

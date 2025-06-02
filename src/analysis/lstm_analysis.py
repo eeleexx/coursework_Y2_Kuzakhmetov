@@ -134,12 +134,19 @@ def run_lstm_analysis(
                         results[symbol] = {}
 
                     results[symbol][variation] = {
-                        'metrics': metrics,
+                        'metrics': {
+                            'train_rmse': metrics['train_rmse'],
+                            'train_mae': metrics['train_mae'],
+                            'test_rmse': metrics['test_rmse'],
+                            'test_mae': metrics['test_mae']
+                        },
                         'history': {
                             'loss': history.history['loss'],
                             'val_loss': history.history['val_loss']
                         },
-                        'data_points': len(data)
+                        'data_points': len(data),
+                        'test_predictions': metrics['test_predictions'],
+                        'test_actual': metrics['test_actual']
                     }
 
                     # Save individual results

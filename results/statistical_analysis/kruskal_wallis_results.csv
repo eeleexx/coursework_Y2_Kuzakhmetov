@@ -1,0 +1,13 @@
+Ticker,Group,Variations,H_Statistic,P_Value
+AMD,length_311,"price_only, price_headline, price_summary, price_headline_summary",121.08947424607095,4.495636301133992e-26
+AMD,length_229,"price_headline_no_clickbait, price_summary_no_clickbait, price_headline_summary_no_clickbait",9.99782967614101,0.006745262731310979
+INTC,length_311,"price_only, price_headline, price_summary, price_headline_summary",10.467684657012342,0.014981720710453979
+INTC,length_227,"price_headline_no_clickbait, price_summary_no_clickbait, price_headline_summary_no_clickbait",2.312370183142775,0.31468438602458004
+JPM,length_311,"price_only, price_headline, price_summary, price_headline_summary",23.82091261625328,2.722547258947142e-05
+JPM,length_284,"price_headline_no_clickbait, price_summary_no_clickbait, price_headline_summary_no_clickbait",3.2320020381521317,0.19869167670053847
+BAC,length_311,"price_only, price_headline, price_summary, price_headline_summary",84.23673270640666,3.784282510066012e-18
+BAC,length_280,"price_headline_no_clickbait, price_summary_no_clickbait, price_headline_summary_no_clickbait",0.11894379868454052,0.9422620114014806
+JNJ,length_311,"price_only, price_headline, price_summary, price_headline_summary",0.490613705324904,0.9209486474227139
+JNJ,length_286,"price_headline_no_clickbait, price_summary_no_clickbait, price_headline_summary_no_clickbait",0.27139131617377643,0.8731083155125257
+PFE,length_311,"price_only, price_headline, price_summary, price_headline_summary",0.5102685490983276,0.9166297336558755
+PFE,length_273,"price_headline_no_clickbait, price_summary_no_clickbait, price_headline_summary_no_clickbait",85.21324820686914,3.1345720683761176e-19

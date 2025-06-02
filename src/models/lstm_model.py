@@ -371,7 +371,9 @@ class StockLSTM(Model):
             'train_rmse': train_rmse,
             'train_mae': train_mae,
             'test_rmse': test_rmse,
-            'test_mae': test_mae
+            'test_mae': test_mae,
+            'test_predictions': y_test_pred.tolist(),
+            'test_actual': self.y_test.tolist()
         }
 
     def export(self) -> Dict:
