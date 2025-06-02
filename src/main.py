@@ -43,9 +43,33 @@ KNN_DIR = os.path.join(RESULTS_DIR, 'knn_analysis')
 KNN_PLOTS = os.path.join(KNN_DIR, 'plots')
 KNN_MODELS = os.path.join(KNN_DIR, 'models')
 
+# New KNN variation directories
+KNN_PRICE_ONLY = os.path.join(KNN_DIR, 'price_only')
+KNN_PRICE_HEADLINE = os.path.join(KNN_DIR, 'price_headline')
+KNN_PRICE_SUMMARY = os.path.join(KNN_DIR, 'price_summary')
+KNN_PRICE_HEADLINE_SUMMARY = os.path.join(KNN_DIR, 'price_headline_summary')
+KNN_PRICE_HEADLINE_NO_CLICKBAIT = os.path.join(
+    KNN_DIR, 'price_headline_no_clickbait')
+KNN_PRICE_SUMMARY_NO_CLICKBAIT = os.path.join(
+    KNN_DIR, 'price_summary_no_clickbait')
+KNN_PRICE_HEADLINE_SUMMARY_NO_CLICKBAIT = os.path.join(
+    KNN_DIR, 'price_headline_summary_no_clickbait')
+
 LSTM_DIR = os.path.join(RESULTS_DIR, 'lstm_analysis')
 LSTM_PLOTS = os.path.join(LSTM_DIR, 'plots')
 LSTM_MODELS = os.path.join(LSTM_DIR, 'models')
+
+# New LSTM variation directories
+LSTM_PRICE_ONLY = os.path.join(LSTM_DIR, 'price_only')
+LSTM_PRICE_HEADLINE = os.path.join(LSTM_DIR, 'price_headline')
+LSTM_PRICE_SUMMARY = os.path.join(LSTM_DIR, 'price_summary')
+LSTM_PRICE_HEADLINE_SUMMARY = os.path.join(LSTM_DIR, 'price_headline_summary')
+LSTM_PRICE_HEADLINE_NO_CLICKBAIT = os.path.join(
+    LSTM_DIR, 'price_headline_no_clickbait')
+LSTM_PRICE_SUMMARY_NO_CLICKBAIT = os.path.join(
+    LSTM_DIR, 'price_summary_no_clickbait')
+LSTM_PRICE_HEADLINE_SUMMARY_NO_CLICKBAIT = os.path.join(
+    LSTM_DIR, 'price_headline_summary_no_clickbait')
 
 os.makedirs(DATA_DIR, exist_ok=True)
 
@@ -56,13 +80,29 @@ os.makedirs(VADER_COMPETITION, exist_ok=True)
 os.makedirs(VADER_SECTORS, exist_ok=True)
 os.makedirs(VADER_PREDICTIONS, exist_ok=True)
 
+# Create KNN directories
 os.makedirs(KNN_DIR, exist_ok=True)
 os.makedirs(KNN_PLOTS, exist_ok=True)
 os.makedirs(KNN_MODELS, exist_ok=True)
+os.makedirs(KNN_PRICE_ONLY, exist_ok=True)
+os.makedirs(KNN_PRICE_HEADLINE, exist_ok=True)
+os.makedirs(KNN_PRICE_SUMMARY, exist_ok=True)
+os.makedirs(KNN_PRICE_HEADLINE_SUMMARY, exist_ok=True)
+os.makedirs(KNN_PRICE_HEADLINE_NO_CLICKBAIT, exist_ok=True)
+os.makedirs(KNN_PRICE_SUMMARY_NO_CLICKBAIT, exist_ok=True)
+os.makedirs(KNN_PRICE_HEADLINE_SUMMARY_NO_CLICKBAIT, exist_ok=True)
 
+# Create LSTM directories
 os.makedirs(LSTM_DIR, exist_ok=True)
 os.makedirs(LSTM_PLOTS, exist_ok=True)
 os.makedirs(LSTM_MODELS, exist_ok=True)
+os.makedirs(LSTM_PRICE_ONLY, exist_ok=True)
+os.makedirs(LSTM_PRICE_HEADLINE, exist_ok=True)
+os.makedirs(LSTM_PRICE_SUMMARY, exist_ok=True)
+os.makedirs(LSTM_PRICE_HEADLINE_SUMMARY, exist_ok=True)
+os.makedirs(LSTM_PRICE_HEADLINE_NO_CLICKBAIT, exist_ok=True)
+os.makedirs(LSTM_PRICE_SUMMARY_NO_CLICKBAIT, exist_ok=True)
+os.makedirs(LSTM_PRICE_HEADLINE_SUMMARY_NO_CLICKBAIT, exist_ok=True)
 
 
 def load_data() -> Tuple[pd.DataFrame, Dict[str, pd.DataFrame]]:
@@ -281,19 +321,19 @@ def plot_vader_predictions(stock_data: pd.DataFrame, news_data: Dict[str, pd.Dat
         plt.close()
 
 
-def run_lstm_analysis(stock_data: pd.DataFrame, news_data: Dict[str, pd.DataFrame], output_dir: str):
+def run_lstm_analysis(stock_data: pd.DataFrame, news_data: Dict[str, pd.DataFrame], symbols: List[str], lstm_dir: str, vader_sentiment_dir: str, prediction_type: str, force_rerun: bool):
     """
     Run LSTM analysis for each symbol using both price and sentiment data
     """
-    plots_dir = os.path.join(output_dir, 'plots')
-    models_dir = os.path.join(output_dir, 'models')
+    plots_dir = os.path.join(lstm_dir, 'plots')
+    models_dir = os.path.join(lstm_dir, 'models')
     os.makedirs(plots_dir, exist_ok=True)
     os.makedirs(models_dir, exist_ok=True)
 
     results = {}
     sentiment_analyzer = SentimentAnalyzer()
 
-    for symbol in SYMBOLS:
+    for symbol in symbols:
         if symbol not in news_data:
             continue
 
@@ -333,7 +373,7 @@ def run_lstm_analysis(stock_data: pd.DataFrame, news_data: Dict[str, pd.DataFram
         lstm_model.plot_multiple_graphs(ticker=symbol, output_dir=plots_dir)
 
         metrics = lstm_model.export()
-        metrics_file = os.path.join(output_dir, f'{symbol}_lstm_metrics.json')
+        metrics_file = os.path.join(lstm_dir, f'{symbol}_lstm_metrics.json')
         with open(metrics_file, 'w') as f:
             json.dump(metrics, f, indent=4)
 
@@ -366,11 +406,26 @@ def main():
                            os.path.join(os.path.dirname(__file__), '..', 'results', 'vader_analysis', 'predictions'))
 
     print("\nRunning KNN analysis...")
-    run_knn_analysis(stock_data, news_data, SYMBOLS,
-                     KNN_DIR, prediction_type='regression')
+    run_knn_analysis(
+        stock_data=stock_data,
+        news_data=news_data,
+        symbols=SYMBOLS,
+        knn_dir=KNN_DIR,
+        vader_sentiment_dir=VADER_SENTIMENT,
+        prediction_type='regression',
+        force_rerun=False
+    )
 
     print("\nRunning LSTM analysis...")
-    run_lstm_analysis(stock_data, news_data, LSTM_DIR)
+    run_lstm_analysis(
+        stock_data=stock_data,
+        news_data=news_data,
+        symbols=SYMBOLS,
+        lstm_dir=LSTM_DIR,
+        vader_sentiment_dir=VADER_SENTIMENT,
+        prediction_type='regression',
+        force_rerun=False
+    )
 
 
 if __name__ == "__main__":
