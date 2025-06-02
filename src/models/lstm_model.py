@@ -1,187 +1,392 @@
 import numpy as np
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import LSTM, Dense, Dropout, Bidirectional
-from sklearn.preprocessing import MinMaxScaler
-from scipy import stats
 import pandas as pd
-from typing import Dict, List, Tuple, Union
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras.models import Sequential, load_model
+from tensorflow.keras.layers import LSTM, Dense, Input, Dropout
+from tensorflow.keras import callbacks
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
+from tensorflow.keras.optimizers import Adam
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+import math
+from typing import List, Optional, Dict, Tuple
+import os
+import matplotlib.pyplot as plt
+
+RANDOM_STATE = 42
 
 
-class StockLSTM:
-    def __init__(self, sequence_length: int = 10, use_bidirectional: bool = True):
-        """
-        Initialize LSTM model for stock prediction using sentiment data
-
-        Args:
-            sequence_length: Number of time steps to look back
-            use_bidirectional: Whether to use bidirectional LSTM
-        """
-        self.sequence_length = sequence_length
-        self.use_bidirectional = use_bidirectional
+class Model:
+    def __init__(self, df, filters=[]):
+        self.data = df[filters]
+        self.filters = filters
+        self.X_train = None
+        self.y_train = None
+        self.X_Test = None
+        self.y_test = None
         self.model = None
-        self.scaler = MinMaxScaler(feature_range=(0, 1))
-        self.feature_scaler = MinMaxScaler(feature_range=(0, 1))
+        self.history = None
+        self.scaler = None
+        self.test_mae = 0
+        self.test_rmse = 0
+        self.train_mae = 0
+        self.train_rmse = 0
+        self.train_predict = None
+        self.test_predict = None
 
-    def create_model(self, input_shape: Tuple[int, int]) -> Sequential:
-        """
-        Create LSTM model architecture
+    def fit(self):
+        pass
 
-        Args:
-            input_shape: Shape of input data (sequence_length, features)
-        """
-        model = Sequential()
+    def draw_train_graph(self, ticker=None, ax=None):
+        Xt = self.model.predict(self.X_train)
+        Xt = Xt.flatten()
 
-        # First LSTM layer
-        if self.use_bidirectional:
-            model.add(Bidirectional(LSTM(units=64, return_sequences=True),
-                                    input_shape=input_shape))
-        else:
-            model.add(LSTM(units=64, return_sequences=True,
-                           input_shape=input_shape))
+        df_actual_keys = ["Actual"]
+        if len(self.filters) > 1:
+            df_actual_keys += ['null_val']
+        df_actual_keys += [f"null_val{i}" for i in range(
+            1, len(self.filters) - 1)]
+        df_actual_data = {"Actual": self.y_train}
+        for _key in df_actual_keys[1:]:
+            df_actual_data[_key] = [0] * len(self.y_train)
 
-        model.add(Dropout(0.2))
+        df_predicted_keys = ["Predicted"]
+        if len(self.filters) > 1:
+            df_predicted_keys.append('null_val')
+        df_predicted_keys += [
+            f"null_val{i}" for i in range(1, len(self.filters) - 1)]
+        df_predicted_data = {"Predicted": Xt}
+        for _key in df_predicted_keys[1:]:
+            df_predicted_data[_key] = [0] * len(Xt)
 
-        # Second LSTM layer
-        if self.use_bidirectional:
-            model.add(Bidirectional(LSTM(units=32, return_sequences=False)))
-        else:
-            model.add(LSTM(units=32, return_sequences=False))
+        df_actual = pd.DataFrame(df_actual_data)
+        df_actual[df_actual_keys] = self.scaler.inverse_transform(
+            df_actual[df_actual_keys])
 
-        model.add(Dropout(0.2))
+        df_predicted = pd.DataFrame(df_predicted_data)
+        df_predicted[df_predicted_keys] = self.scaler.inverse_transform(
+            df_predicted[df_predicted_keys])
+        self.train_predict = df_predicted.Predicted
 
-        # Dense layers
-        model.add(Dense(units=32, activation='relu'))
-        model.add(Dense(units=16, activation='relu'))
-        model.add(Dense(units=1))
+        ax.plot(df_actual.Actual, label="Actual", color='blue')
+        ax.plot(self.train_predict, label="Predicted",
+                color='red', linestyle='--')
+        ax.legend()
 
-        # Huber loss is more robust to outliers
-        model.compile(optimizer='adam', loss='huber')
+        self.train_rmse = math.sqrt(mean_squared_error(
+            df_actual.Actual, self.train_predict))
+        self.train_mae = mean_absolute_error(
+            df_actual.Actual, self.train_predict)
 
-        self.model = model
-        return model
+        ax.set_title(
+            f"Training Data (80% of data)\n"
+            f"RMSE: {self.train_rmse:.2f}, MAE: {self.train_mae:.2f}"
+        )
+        ax.set_xlabel("Time Steps")
+        ax.set_ylabel("Price")
 
-    def prepare_data(self, X: pd.DataFrame, y: Union[pd.Series, None] = None,
-                     is_training: bool = True) -> Union[np.ndarray, Tuple[np.ndarray, np.ndarray]]:
-        """
-        Prepare data for LSTM model, handling both sentiment and price features
+        print(
+            f"[{self.filters}] [{self.__class__.__name__}] Train RMSE =", self.train_rmse)
+        print(
+            f"[{self.filters}] [{self.__class__.__name__}] Train MAE =", self.train_mae)
 
-        Args:
-            X: DataFrame containing features (sentiment and price data)
-            y: Target values (returns)
-            is_training: Whether this is for training (True) or prediction (False)
-        """
-        if is_training:
-            # Scale features
-            X_scaled = self.feature_scaler.fit_transform(X)
-        else:
-            X_scaled = self.feature_scaler.transform(X)
+    def draw_test_graph(self, ticker=None, ax=None):
+        Xt = self.model.predict(self.X_Test)
+        Xt = Xt.flatten()
 
-        # Create sequences
-        X_seq = []
-        for i in range(len(X_scaled) - self.sequence_length):
-            X_seq.append(X_scaled[i:(i + self.sequence_length)])
-        X_seq = np.array(X_seq)
+        df_actual_keys = ["Actual"]
+        df_actual_data = {"Actual": self.y_test}
+        if len(self.filters) > 1:
+            df_actual_keys.append('null_val')
+        df_actual_keys += [f"null_val{i}" for i in range(
+            1, len(self.filters) - 1)]
+        for _key in df_actual_keys[1:]:
+            df_actual_data[_key] = [0] * len(self.y_test)
 
-        if y is not None:
-            y_seq = y[self.sequence_length:].values
-            return X_seq, y_seq
-        return X_seq
+        df_predicted_keys = ["Predicted"]
+        df_predicted_data = {"Predicted": Xt}
 
-    def train(self, X: pd.DataFrame, y: pd.Series, epochs: int = 100,
-              batch_size: int = 32, validation_split: float = 0.2) -> Dict:
-        """
-        Train the LSTM model
+        if len(self.filters) > 1:
+            df_predicted_keys.append('null_val')
+        df_predicted_keys += [
+            f"null_val{i}" for i in range(1, len(self.filters) - 1)]
+        for _key in df_predicted_keys[1:]:
+            df_predicted_data[_key] = [0] * len(Xt)
 
-        Args:
-            X: Features DataFrame
-            y: Target Series
-            epochs: Number of training epochs
-            batch_size: Batch size for training
-            validation_split: Fraction of data to use for validation
-        """
-        X_seq, y_seq = self.prepare_data(X, y)
-        if self.model is None:
-            self.create_model(input_shape=(X_seq.shape[1], X_seq.shape[2]))
+        df_actual = pd.DataFrame(df_actual_data)
+        df_actual[df_actual_keys] = self.scaler.inverse_transform(
+            df_actual[df_actual_keys])
 
-        history = self.model.fit(
-            X_seq, y_seq,
+        df_predicted = pd.DataFrame(df_predicted_data)
+        df_predicted[df_predicted_keys] = self.scaler.inverse_transform(
+            df_predicted[df_predicted_keys])
+        self.test_predict = df_predicted.Predicted
+
+        ax.plot(df_actual.Actual, label="Actual", color='blue')
+        ax.plot(self.test_predict, label="Predicted",
+                color='red', linestyle='--')
+        ax.legend()
+
+        self.test_rmse = math.sqrt(mean_squared_error(
+            df_actual.Actual, self.test_predict))
+        self.test_mae = mean_absolute_error(
+            df_actual.Actual, self.test_predict)
+
+        ax.set_title(
+            f"Test Data (20% of data)\n"
+            f"RMSE: {self.test_rmse:.2f}, MAE: {self.test_mae:.2f}"
+        )
+        ax.set_xlabel("Time Steps")
+        ax.set_ylabel("Price")
+
+        print(
+            f"[{self.filters}] [{self.__class__.__name__}] Test RMSE =", self.test_rmse)
+        print(
+            f"[{self.filters}] [{self.__class__.__name__}] Test MAE =", self.test_mae)
+
+    def plot_multiple_graphs(self, ticker=None, output_dir=None):
+        fig, axs = plt.subplots(nrows=1, ncols=2, figsize=(16, 8))
+
+        self.draw_train_graph(ticker, axs[0])
+        self.draw_test_graph(ticker, axs[1])
+
+        fig.suptitle(
+            f"LSTM Model Predictions for {ticker}\n"
+            f"Features: {', '.join(self.filters)}",
+            fontsize=14,
+            y=1.02
+        )
+
+        plt.tight_layout()
+
+        os.makedirs(output_dir, exist_ok=True)
+
+        output_path = os.path.join(
+            output_dir, f'{ticker}_{self.__class__.__name__}_{"_".join(self.filters)}.png')
+        plt.savefig(output_path, bbox_inches='tight', dpi=300)
+        plt.close()
+
+    def export(self, metric_params: Optional[List] = None):
+        if not metric_params:
+            result = {
+                "test_rmse": float(self.test_rmse),
+                "test_mae": float(self.test_mae),
+                "train_rmse": float(self.train_rmse),
+                "train_mae": float(self.train_mae),
+                "test_predict": list(map(float, self.test_predict.tolist())),
+            }
+            return result
+        result = {}
+        for metric_param in metric_params:
+            result[metric_param] = getattr(self, metric_param)
+        return result
+
+
+class StockLSTM(Model):
+    def __init__(self, df, filters):
+        super().__init__(df, filters=filters)
+
+    def process_data(self, lookback, train_size, scaler=StandardScaler):
+        data = self.data.copy()
+
+        train_data, test_data = train_test_split(
+            data, test_size=1 - train_size, shuffle=False)
+
+        self.scaler = scaler()
+        self.scaler.fit(train_data)
+        train_data = self.scaler.transform(train_data)
+        test_data = self.scaler.transform(test_data)
+
+        X_train, y_train = [], []
+        for i in range(len(train_data) - lookback - 1):
+            X_train.append(train_data[i:i + lookback])
+            y_train.append(train_data[i + lookback, 0])
+        self.X_train, self.y_train = np.array(X_train), np.array(y_train)
+
+        X_test, y_test = [], []
+        for i in range(len(test_data) - lookback - 1):
+            X_test.append(test_data[i:i + lookback])
+            y_test.append(test_data[i + lookback, 0])
+        self.X_Test, self.y_test = np.array(X_test), np.array(y_test)
+
+        self.X_train = self.X_train.reshape(
+            (self.X_train.shape[0], self.X_train.shape[1], len(self.filters)))
+        self.X_Test = self.X_Test.reshape(
+            (self.X_Test.shape[0], self.X_Test.shape[1], len(self.filters)))
+
+    def fit(self, lookback=10, train_size=0.8, scaler=StandardScaler, epochs=300, model_dir=None, ticker=None):
+        self.process_data(lookback, train_size, scaler)
+        tf.keras.backend.clear_session()
+        tf.random.set_seed(RANDOM_STATE)
+        np.random.seed(RANDOM_STATE)
+
+        inputs = Input(shape=(lookback, len(self.filters)))
+        x = LSTM(units=128, return_sequences=True)(inputs)
+        x = Dropout(0.1)(x)
+        x = LSTM(64)(x)
+        x = Dropout(0.1)(x)
+        outputs = Dense(units=1)(x)
+        self.model = keras.Model(inputs=inputs, outputs=outputs)
+
+        self.model.compile(
+            optimizer=Adam(learning_rate=0.001),
+            loss='mse',
+            metrics=['mae']
+        )
+
+        callbacks_list = [
+            EarlyStopping(
+                monitor="val_loss",
+                mode="min",
+                patience=25,
+                restore_best_weights=True
+            )
+        ]
+
+        if model_dir and ticker:
+            os.makedirs(model_dir, exist_ok=True)
+            model_path = os.path.join(model_dir, f'{ticker}_lstm_model.keras')
+            callbacks_list.append(
+                ModelCheckpoint(
+                    filepath=model_path,
+                    monitor='val_loss',
+                    save_best_only=True,
+                    mode='min'
+                )
+            )
+
+        self.history = self.model.fit(
+            self.X_train,
+            self.y_train,
             epochs=epochs,
-            batch_size=batch_size,
-            validation_split=validation_split,
+            validation_data=(self.X_Test, self.y_test),
+            shuffle=False,
+            callbacks=callbacks_list,
             verbose=1
         )
 
-        # Calculate training metrics
-        train_size = int(len(X_seq) * (1 - validation_split))
-        X_train, X_val = X_seq[:train_size], X_seq[train_size:]
-        y_train, y_val = y_seq[:train_size], y_seq[train_size:]
+        y_train_pred = self.model.predict(self.X_train)
+        y_test_pred = self.model.predict(self.X_Test)
 
-        train_pred = self.model.predict(X_train)
-        val_pred = self.model.predict(X_val)
+        self.train_rmse = np.sqrt(
+            mean_squared_error(self.y_train, y_train_pred))
+        self.train_mae = mean_absolute_error(self.y_train, y_train_pred)
+        self.test_rmse = np.sqrt(mean_squared_error(self.y_test, y_test_pred))
+        self.test_mae = mean_absolute_error(self.y_test, y_test_pred)
+
+        print("\nTraining Summary:")
+        print(f"Final training loss: {self.history.history['loss'][-1]:.4f}")
+        print(
+            f"Final validation loss: {self.history.history['val_loss'][-1]:.4f}")
+        print(f"Number of epochs trained: {len(self.history.history['loss'])}")
+        print(f"Training RMSE: {self.train_rmse:.4f}")
+        print(f"Training MAE: {self.train_mae:.4f}")
+        print(f"Test RMSE: {self.test_rmse:.4f}")
+        print(f"Test MAE: {self.test_mae:.4f}")
+
+        return self.history
+
+    def predict(self, X: np.ndarray = None) -> np.ndarray:
+        """
+        Make predictions
+        """
+        if X is None:
+            return self.model.predict(self.X_Test)
+        return self.model.predict(X)
+
+    def evaluate(self) -> Dict:
+        """
+        Evaluate model performance
+        """
+        y_pred = self.predict()
+        y_true = self.y_test
 
         metrics = {
-            'train_metrics': self.evaluate(y_train, train_pred),
-            'val_metrics': self.evaluate(y_val, val_pred),
-            'history': history.history
+            'MSE': mean_squared_error(y_true, y_pred),
+            'RMSE': np.sqrt(mean_squared_error(y_true, y_pred)),
+            'MAE': mean_absolute_error(y_true, y_pred),
+            'R2': r2_score(y_true, y_pred),
+            'train_rmse': self.train_rmse,
+            'train_mae': self.train_mae,
+            'test_rmse': self.test_rmse,
+            'test_mae': self.test_mae
         }
 
         return metrics
 
-    def predict(self, X: pd.DataFrame) -> np.ndarray:
-        """Make predictions using the trained model"""
-        X_seq = self.prepare_data(X, is_training=False)
-        predictions = self.model.predict(X_seq)
-        return predictions
-
-    def evaluate(self, y_true: np.ndarray, y_pred: np.ndarray) -> Dict[str, float]:
+    def plot_multiple_graphs(self, ticker: str, output_dir: str):
         """
-        Calculate various metrics including MSE, RMSE, MAE, and KS test
-
-        Args:
-            y_true: True values
-            y_pred: Predicted values
+        Plot actual vs predicted values for both training and test sets
         """
-        from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+        y_train_pred = self.model.predict(self.X_train)
+        y_test_pred = self.model.predict(self.X_Test)
 
-        # Basic metrics
-        mse = mean_squared_error(y_true, y_pred)
-        rmse = np.sqrt(mse)
-        mae = mean_absolute_error(y_true, y_pred)
-        r2 = r2_score(y_true, y_pred)
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 8))
 
-        # Kolmogorov-Smirnov test
-        ks_statistic, p_value = stats.ks_2samp(y_true, y_pred)
+        ax1.plot(self.y_train, label='Actual', color='blue')
+        ax1.plot(y_train_pred, label='Predicted', color='red', linestyle='--')
+        ax1.legend()
 
-        # Direction accuracy (for returns)
-        direction_accuracy = np.mean(np.sign(y_true) == np.sign(y_pred))
+        train_rmse = np.sqrt(mean_squared_error(self.y_train, y_train_pred))
+        train_mae = mean_absolute_error(self.y_train, y_train_pred)
+
+        ax1.set_title(
+            f"Training Data (80% of data)\n"
+            f"RMSE: {train_rmse:.2f}, MAE: {train_mae:.2f}"
+        )
+        ax1.set_xlabel("Time Steps")
+        ax1.set_ylabel("Price")
+
+        ax2.plot(self.y_test, label='Actual', color='blue')
+        ax2.plot(y_test_pred, label='Predicted', color='red', linestyle='--')
+        ax2.legend()
+
+        test_rmse = np.sqrt(mean_squared_error(self.y_test, y_test_pred))
+        test_mae = mean_absolute_error(self.y_test, y_test_pred)
+
+        ax2.set_title(
+            f"Test Data (20% of data)\n"
+            f"RMSE: {test_rmse:.2f}, MAE: {test_mae:.2f}"
+        )
+        ax2.set_xlabel("Time Steps")
+        ax2.set_ylabel("Price")
+
+        fig.suptitle(
+            f"LSTM Model Predictions for {ticker}\n"
+            f"Features: {', '.join(self.filters)}",
+            fontsize=14,
+            y=1.02
+        )
+
+        plt.tight_layout()
+
+        output_path = os.path.join(
+            output_dir, f'{ticker}_lstm_predictions.png')
+        plt.savefig(output_path, bbox_inches='tight', dpi=300)
+        plt.close()
 
         return {
-            'MSE': mse,
-            'RMSE': rmse,
-            'MAE': mae,
-            'R2': r2,
-            'KS_statistic': ks_statistic,
-            'p_value': p_value,
-            'direction_accuracy': direction_accuracy
+            'train_rmse': train_rmse,
+            'train_mae': train_mae,
+            'test_rmse': test_rmse,
+            'test_mae': test_mae
         }
 
-    def get_feature_importance(self, X: pd.DataFrame, y: pd.Series) -> Dict[str, float]:
+    def export(self) -> Dict:
         """
-        Calculate feature importance using permutation importance
-
-        Args:
-            X: Features DataFrame
-            y: Target Series
+        Export model metrics and predictions
         """
-        X_seq, y_seq = self.prepare_data(X, y)
-        base_score = self.evaluate(y_seq, self.predict(X))['MSE']
+        y_pred = self.predict()
+        y_true = self.y_test
 
-        importance = {}
-        for feature in X.columns:
-            X_permuted = X.copy()
-            X_permuted[feature] = np.random.permutation(X_permuted[feature])
-            permuted_score = self.evaluate(
-                y_seq, self.predict(X_permuted))['MSE']
-            importance[feature] = permuted_score - base_score
+        metrics = self.evaluate()
+        metrics.update({
+            'train_rmse': np.sqrt(mean_squared_error(self.y_train, self.model.predict(self.X_train))),
+            'train_mae': mean_absolute_error(self.y_train, self.model.predict(self.X_train)),
+            'test_predictions': y_pred.tolist(),
+            'test_actual': y_true.tolist()
+        })
 
-        return importance
+        return metrics

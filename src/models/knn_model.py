@@ -9,6 +9,7 @@ import os
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score, accuracy_score, precision_score, recall_score, f1_score
+from sklearn.model_selection import train_test_split
 
 
 class StockKNN:
@@ -22,129 +23,147 @@ class StockKNN:
         """
         self.n_neighbors = n_neighbors
         self.prediction_type = prediction_type
-
-        if prediction_type == 'regression':
-            self.model = KNeighborsRegressor(n_neighbors=n_neighbors)
-        else:
-            self.model = KNeighborsClassifier(n_neighbors=n_neighbors)
-
+        self.model = KNeighborsRegressor(n_neighbors=n_neighbors)
         self.scaler = StandardScaler()
         self.feature_names = None
+        self.X_train = None
+        self.y_train = None
+        self.X_test = None
+        self.y_test = None
+        self.lookback = None
+        self.train_size = None
 
-    def prepare_data(self, X: pd.DataFrame, y: Union[pd.Series, None] = None,
-                     is_training: bool = True) -> Union[pd.DataFrame, Tuple[pd.DataFrame, pd.Series]]:
+    def create_sequences(self, data: np.ndarray, lookback: int) -> Tuple[np.ndarray, np.ndarray]:
         """
-        Prepare data for KNN model by scaling features
+        Create sequences for time series prediction
         """
-        # Drop non-feature columns
-        feature_columns = [col for col in X.columns if col not in [
-            'Date', 'date', 'symbol', 'Close', 'Volume']]
-        X = X[feature_columns]
+        X, y = [], []
+        for i in range(len(data) - lookback):
+            X.append(data[i:i + lookback])
+            y.append(data[i + lookback, 0])  # Predict next day's price
+        return np.array(X), np.array(y)
 
-        if is_training:
-            self.feature_names = X.columns
-            X_scaled = pd.DataFrame(
-                self.scaler.fit_transform(X),
-                columns=self.feature_names,
-                index=X.index
-            )
-        else:
-            X_scaled = pd.DataFrame(
-                self.scaler.transform(X),
-                columns=self.feature_names,
-                index=X.index
-            )
-
-        if y is not None:
-            print("\nTarget preparation debug:")
-            print(f"Original y type: {type(y)}")
-            print(f"Original y dtype: {y.dtype}")
-            print(f"Original y unique values: {y.unique()}")
-
-            # Ensure y is binary for classification
-            if self.prediction_type == 'classification':
-                y = y.astype(int)
-                print(f"Converted y dtype: {y.dtype}")
-                print(f"Converted y unique values: {y.unique()}")
-
-            return X_scaled, y
-
-        return X_scaled
-
-    def train(self, X: pd.DataFrame, y: pd.Series) -> Dict:
+    def prepare_data(self, data: pd.DataFrame, lookback: int = 10, train_size: float = 0.8):
         """
-        Train the KNN model and return performance metrics
+        Prepare data for time series prediction
         """
-        X_scaled, y_processed = self.prepare_data(X, y, is_training=True)
-        self.model.fit(X_scaled, y_processed)
+        self.lookback = lookback
+        self.train_size = train_size
 
-        # Make predictions on training data
-        y_pred = self.predict(X)
+        train_data, test_data = train_test_split(
+            data, test_size=1 - train_size, shuffle=False)
 
-        # Calculate metrics
-        metrics = self.evaluate(y_processed, y_pred)
+        self.scaler.fit(train_data)
+        train_scaled = self.scaler.transform(train_data)
+        test_scaled = self.scaler.transform(test_data)
 
-        return metrics
+        self.X_train, self.y_train = self.create_sequences(
+            train_scaled, lookback)
+        self.X_test, self.y_test = self.create_sequences(test_scaled, lookback)
 
-    def predict(self, X: pd.DataFrame) -> np.ndarray:
+        self.X_train = self.X_train.reshape((self.X_train.shape[0], -1))
+        self.X_test = self.X_test.reshape((self.X_test.shape[0], -1))
+
+    def fit(self, data: pd.DataFrame, lookback: int = 10, train_size: float = 0.8):
         """
-        Make predictions on new data
+        Train the KNN model
         """
-        X_scaled = self.prepare_data(X, is_training=False)
-        predictions = self.model.predict(X_scaled)
+        self.prepare_data(data, lookback, train_size)
+        self.model.fit(self.X_train, self.y_train)
 
-        print("\nPrediction debug:")
-        print(f"Predictions type: {type(predictions)}")
-        print(f"Predictions dtype: {predictions.dtype}")
-        print(f"Predictions unique values: {np.unique(predictions)}")
+        y_train_pred = self.model.predict(self.X_train)
+        train_metrics = {
+            'MSE': mean_squared_error(self.y_train, y_train_pred),
+            'RMSE': np.sqrt(mean_squared_error(self.y_train, y_train_pred)),
+            'MAE': mean_absolute_error(self.y_train, y_train_pred),
+            'R2': r2_score(self.y_train, y_train_pred)
+        }
 
-        return predictions
+        return train_metrics
 
-    def evaluate(self, y_true: Union[pd.Series, np.ndarray],
-                 y_pred: Union[pd.Series, np.ndarray]) -> Dict:
+    def predict(self, X: Union[pd.DataFrame, np.ndarray] = None) -> np.ndarray:
+        """
+        Make predictions. If X is None, predict on test set.
+        """
+        if X is None:
+            return self.model.predict(self.X_test)
+        return self.model.predict(X)
+
+    def evaluate(self, y_true: Union[pd.Series, np.ndarray] = None,
+                 y_pred: Union[pd.Series, np.ndarray] = None) -> Dict:
         """
         Evaluate model performance
         """
-        print("\nEvaluation debug:")
-        print(f"y_true type: {type(y_true)}")
-        print(f"y_true dtype: {y_true.dtype}")
-        print(f"y_true unique values: {np.unique(y_true)}")
-        print(f"y_pred type: {type(y_pred)}")
-        print(f"y_pred dtype: {y_pred.dtype}")
-        print(f"y_pred unique values: {np.unique(y_pred)}")
+        if y_true is None:
+            y_true = self.y_test
+        if y_pred is None:
+            y_pred = self.predict()
 
-        # Convert to numpy arrays if needed
-        if isinstance(y_true, pd.Series):
-            y_true = y_true.values
-        if isinstance(y_pred, pd.Series):
-            y_pred = y_pred.values
-
-        # Ensure both are integers for classification
-        if self.prediction_type == 'classification':
-            y_true = y_true.astype(int)
-            y_pred = y_pred.astype(int)
-
-            print("\nFinal conversion check:")
-            print(f"Final y_true dtype: {y_true.dtype}")
-            print(f"Final y_pred dtype: {y_pred.dtype}")
-            print(f"Final y_true unique values: {np.unique(y_true)}")
-            print(f"Final y_pred unique values: {np.unique(y_pred)}")
-
-            metrics = {
-                'Accuracy': accuracy_score(y_true, y_pred),
-                'Precision': precision_score(y_true, y_pred, zero_division=0),
-                'Recall': recall_score(y_true, y_pred, zero_division=0),
-                'F1': f1_score(y_true, y_pred, zero_division=0)
-            }
-        else:
-            metrics = {
-                'MSE': mean_squared_error(y_true, y_pred),
-                'RMSE': np.sqrt(mean_squared_error(y_true, y_pred)),
-                'MAE': mean_absolute_error(y_true, y_pred),
-                'R2': r2_score(y_true, y_pred)
-            }
+        metrics = {
+            'MSE': mean_squared_error(y_true, y_pred),
+            'RMSE': np.sqrt(mean_squared_error(y_true, y_pred)),
+            'MAE': mean_absolute_error(y_true, y_pred),
+            'R2': r2_score(y_true, y_pred)
+        }
 
         return metrics
+
+    def plot_multiple_graphs(self, output_dir: str, symbol: str):
+        """
+        Plot actual vs predicted values for both training and test sets
+        """
+        y_train_pred = self.model.predict(self.X_train)
+        y_test_pred = self.model.predict(self.X_test)
+
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 8))
+
+        ax1.plot(self.y_train, label='Actual', color='blue')
+        ax1.plot(y_train_pred, label='Predicted', color='red', linestyle='--')
+        ax1.legend()
+
+        train_rmse = np.sqrt(mean_squared_error(self.y_train, y_train_pred))
+        train_mae = mean_absolute_error(self.y_train, y_train_pred)
+
+        ax1.set_title(
+            f"Training Data (80% of data)\n"
+            f"RMSE: {train_rmse:.2f}, MAE: {train_mae:.2f}"
+        )
+        ax1.set_xlabel("Time Steps")
+        ax1.set_ylabel("Price")
+
+        ax2.plot(self.y_test, label='Actual', color='blue')
+        ax2.plot(y_test_pred, label='Predicted', color='red', linestyle='--')
+        ax2.legend()
+
+        test_rmse = np.sqrt(mean_squared_error(self.y_test, y_test_pred))
+        test_mae = mean_absolute_error(self.y_test, y_test_pred)
+
+        ax2.set_title(
+            f"Test Data (20% of data)\n"
+            f"RMSE: {test_rmse:.2f}, MAE: {test_mae:.2f}"
+        )
+        ax2.set_xlabel("Time Steps")
+        ax2.set_ylabel("Price")
+
+        fig.suptitle(
+            f"KNN Model Predictions for {symbol}\n"
+            f"Lookback Window: {self.lookback} days",
+            fontsize=14,
+            y=1.02
+        )
+
+        plt.tight_layout()
+
+        output_path = os.path.join(output_dir, f'{symbol}_knn_predictions.png')
+        plt.savefig(output_path, bbox_inches='tight', dpi=300)
+        plt.close()
+
+        return {
+            'train_rmse': train_rmse,
+            'train_mae': train_mae,
+            'test_rmse': test_rmse,
+            'test_mae': test_mae
+        }
 
     def save_model(self, model_dir: str, symbol: str):
         """
@@ -188,7 +207,6 @@ class StockKNN:
                 y, self.predict(X_permuted))[metric_key]
             feature_importance[feature] = baseline_metric - permuted_score
 
-        # Plot feature importance
         plt.figure(figsize=(12, 6))
         importance_df = pd.Series(
             feature_importance).sort_values(ascending=True)
@@ -230,4 +248,9 @@ class StockKNN:
 
         plt.tight_layout()
         plt.savefig(os.path.join(output_dir, f'{symbol}_knn_predictions.png'))
+        predictions_dir = os.path.join(
+            os.path.dirname(output_dir), 'predictions')
+        if os.path.exists(predictions_dir):
+            plt.savefig(os.path.join(predictions_dir,
+                        f'{symbol}_knn_predictions.png'))
         plt.close()

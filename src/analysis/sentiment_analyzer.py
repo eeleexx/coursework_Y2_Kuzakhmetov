@@ -8,7 +8,6 @@ from typing import Dict, List, Union, Tuple
 
 class SentimentAnalyzer:
     def __init__(self):
-        # Download required NLTK data
         try:
             nltk.data.find('vader_lexicon')
         except LookupError:
@@ -29,18 +28,14 @@ class SentimentAnalyzer:
         Analyze sentiment for both headlines and summaries
         Returns DataFrame with sentiment scores for each
         """
-        # Create copy to avoid modifying original
         result_df = df.copy()
 
-        # Analyze title (headline) sentiment
         result_df['headline_sentiment'] = result_df['title'].apply(
             self.analyze_text)
 
-        # Analyze summary sentiment
         result_df['summary_sentiment'] = result_df['summary'].apply(
             self.analyze_text)
 
-        # Calculate sentiment difference (potential clickbait measure)
         result_df['sentiment_diff'] = result_df['headline_sentiment'] - \
             result_df['summary_sentiment']
 
@@ -69,23 +64,19 @@ class SentimentAnalyzer:
         """
         results = {}
 
-        # Merge sentiment and returns data
         merged_df = pd.merge(sentiment_df, returns_df, on=[
                              'date', 'symbol'], how='inner')
 
         for symbol in merged_df['symbol'].unique():
             symbol_data = merged_df[merged_df['symbol'] == symbol]
 
-            # Calculate sentiment difference
             sentiment_diff = symbol_data['headline_sentiment'] - \
                 symbol_data['summary_sentiment']
 
-            # Split data into high and low difference groups
             median_diff = sentiment_diff.median()
             high_diff = symbol_data[sentiment_diff > median_diff]
             low_diff = symbol_data[sentiment_diff <= median_diff]
 
-            # Calculate metrics
             metrics = {
                 'headline_vs_returns': self.calculate_metrics(
                     symbol_data['headline_sentiment'].values,
@@ -140,7 +131,6 @@ class SentimentAnalyzer:
                 'extreme_negative_ratio': (data < -0.5).mean(),
             }
 
-            # Add quartile information
             quartiles = data.quantile([0.25, 0.5, 0.75])
             summary[sentiment_type].update({
                 'q1': quartiles[0.25],
@@ -149,7 +139,6 @@ class SentimentAnalyzer:
                 'iqr': quartiles[0.75] - quartiles[0.25]
             })
 
-        # Add sentiment difference statistics
         sentiment_diff = sentiment_df['headline_sentiment'] - \
             sentiment_df['summary_sentiment']
         summary['sentiment_difference'] = {

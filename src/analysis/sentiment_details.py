@@ -27,47 +27,38 @@ def analyze_sentiment_details(news_data: Dict[str, pd.DataFrame], output_dir: st
     sentiment_analyzer = SentimentAnalyzer()
 
     for symbol, df in news_data.items():
-        # Create detailed sentiment analysis
         detailed_sentiment = df.copy()
 
-        # Calculate sentiments
         detailed_sentiment['headline_sentiment'] = detailed_sentiment['title'].apply(
             sentiment_analyzer.analyze_text)
         detailed_sentiment['summary_sentiment'] = detailed_sentiment['summary'].apply(
             sentiment_analyzer.analyze_text)
 
-        # Add sentiment categories
         detailed_sentiment['headline_category'] = detailed_sentiment['headline_sentiment'].apply(
             categorize_sentiment)
         detailed_sentiment['summary_category'] = detailed_sentiment['summary_sentiment'].apply(
             categorize_sentiment)
 
-        # Sort by date and sentiment
         detailed_sentiment = detailed_sentiment.sort_values(
             ['date', 'headline_sentiment'], ascending=[True, False])
 
-        # Add a column for sentiment difference (headline vs summary)
         detailed_sentiment['sentiment_difference'] = detailed_sentiment['headline_sentiment'] - \
             detailed_sentiment['summary_sentiment']
         detailed_sentiment['clickbait_score'] = abs(
             detailed_sentiment['sentiment_difference'])
 
-        # Mark potential clickbait (high difference between headline and summary sentiment)
         detailed_sentiment['is_potential_clickbait'] = detailed_sentiment['clickbait_score'] > 0.5
 
-        # Select and reorder columns
         columns = [
             'date', 'title', 'headline_sentiment', 'headline_category',
             'summary', 'summary_sentiment', 'summary_category',
             'sentiment_difference', 'clickbait_score', 'is_potential_clickbait'
         ]
 
-        # Save to CSV
         output_file = os.path.join(
             output_dir, f'{symbol}_sentiment_details.csv')
         detailed_sentiment[columns].to_csv(output_file, index=False)
 
-        # Generate summary statistics
         summary_stats = {
             'Total Articles': len(detailed_sentiment),
             'Average Headline Sentiment': detailed_sentiment['headline_sentiment'].mean(),
@@ -78,7 +69,6 @@ def analyze_sentiment_details(news_data: Dict[str, pd.DataFrame], output_dir: st
             'Sentiment Distribution': detailed_sentiment['headline_category'].value_counts()
         }
 
-        # Save summary statistics
         summary_file = os.path.join(
             output_dir, f'{symbol}_sentiment_summary.txt')
         with open(summary_file, 'w') as f:
