@@ -40,8 +40,6 @@ VADER_SECTORS = os.path.join(VADER_DIR, 'sectors')
 VADER_PREDICTIONS = os.path.join(VADER_DIR, 'predictions')
 
 KNN_DIR = os.path.join(RESULTS_DIR, 'knn_analysis')
-KNN_PLOTS = os.path.join(KNN_DIR, 'plots')
-KNN_MODELS = os.path.join(KNN_DIR, 'models')
 
 # New KNN variation directories
 KNN_PRICE_ONLY = os.path.join(KNN_DIR, 'price_only')
@@ -56,8 +54,6 @@ KNN_PRICE_HEADLINE_SUMMARY_NO_CLICKBAIT = os.path.join(
     KNN_DIR, 'price_headline_summary_no_clickbait')
 
 LSTM_DIR = os.path.join(RESULTS_DIR, 'lstm_analysis')
-LSTM_PLOTS = os.path.join(LSTM_DIR, 'plots')
-LSTM_MODELS = os.path.join(LSTM_DIR, 'models')
 
 # New LSTM variation directories
 LSTM_PRICE_ONLY = os.path.join(LSTM_DIR, 'price_only')
@@ -82,8 +78,6 @@ os.makedirs(VADER_PREDICTIONS, exist_ok=True)
 
 # Create KNN directories
 os.makedirs(KNN_DIR, exist_ok=True)
-os.makedirs(KNN_PLOTS, exist_ok=True)
-os.makedirs(KNN_MODELS, exist_ok=True)
 os.makedirs(KNN_PRICE_ONLY, exist_ok=True)
 os.makedirs(KNN_PRICE_HEADLINE, exist_ok=True)
 os.makedirs(KNN_PRICE_SUMMARY, exist_ok=True)
@@ -94,8 +88,6 @@ os.makedirs(KNN_PRICE_HEADLINE_SUMMARY_NO_CLICKBAIT, exist_ok=True)
 
 # Create LSTM directories
 os.makedirs(LSTM_DIR, exist_ok=True)
-os.makedirs(LSTM_PLOTS, exist_ok=True)
-os.makedirs(LSTM_MODELS, exist_ok=True)
 os.makedirs(LSTM_PRICE_ONLY, exist_ok=True)
 os.makedirs(LSTM_PRICE_HEADLINE, exist_ok=True)
 os.makedirs(LSTM_PRICE_SUMMARY, exist_ok=True)
@@ -331,7 +323,17 @@ def run_lstm_analysis(stock_data: pd.DataFrame, news_data: Dict[str, pd.DataFram
     os.makedirs(models_dir, exist_ok=True)
 
     results = {}
-    sentiment_analyzer = SentimentAnalyzer()
+
+    # Define feature combinations
+    feature_combinations = {
+        'price_only': ['Close'],
+        'price_headline': ['Close', 'headline_sentiment'],
+        'price_summary': ['Close', 'summary_sentiment'],
+        'price_headline_summary': ['Close', 'headline_sentiment', 'summary_sentiment'],
+        'price_headline_no_clickbait': ['Close', 'headline_sentiment'],
+        'price_summary_no_clickbait': ['Close', 'summary_sentiment'],
+        'price_headline_summary_no_clickbait': ['Close', 'headline_sentiment', 'summary_sentiment']
+    }
 
     for symbol in symbols:
         if symbol not in news_data:
@@ -340,56 +342,121 @@ def run_lstm_analysis(stock_data: pd.DataFrame, news_data: Dict[str, pd.DataFram
         print(f"\nRunning LSTM analysis for {symbol}...")
 
         symbol_stock = stock_data[stock_data['symbol'] == symbol].copy()
-        symbol_news = news_data[symbol].copy()
-
         if len(symbol_stock) == 0:
             print(f"No stock data available for {symbol}")
             continue
 
-        symbol_stock['Date'] = pd.to_datetime(symbol_stock['Date'])
-        symbol_news['date'] = pd.to_datetime(symbol_news['date'])
+        try:
+            # Load precomputed sentiment
+            sentiment_file = os.path.join(
+                vader_sentiment_dir, f'{symbol}_sentiment_details.csv')
+            if not os.path.exists(sentiment_file):
+                print(f"Sentiment file not found for {symbol}")
+                continue
 
-        symbol_news['headline_sentiment'] = symbol_news['title'].apply(
-            sentiment_analyzer.analyze_text)
-        daily_sentiment = symbol_news.groupby('date').agg({
-            'headline_sentiment': 'mean'
-        }).reset_index()
+            sentiment_data = pd.read_csv(sentiment_file)
+            sentiment_data['date'] = pd.to_datetime(sentiment_data['date'])
 
-        merged_data = pd.merge(symbol_stock, daily_sentiment,
-                               left_on='Date', right_on='date', how='left')
-        merged_data = merged_data.fillna(0)
+            # Convert dates to datetime
+            symbol_stock['Date'] = pd.to_datetime(symbol_stock['Date'])
 
-        features = ['Close', 'headline_sentiment']
-        lstm_model = StockLSTM(merged_data, filters=features)
+            # Aggregate daily sentiment
+            daily_sentiment = sentiment_data.groupby('date').agg({
+                'headline_sentiment': 'mean',
+                'summary_sentiment': 'mean',
+                'title': 'count',
+                'is_potential_clickbait': 'max'
+            }).reset_index()
+            daily_sentiment = daily_sentiment.rename(
+                columns={'title': 'news_count'})
 
-        history = lstm_model.fit(
-            lookback=10,
-            train_size=0.8,
-            epochs=300,
-            model_dir=models_dir,
-            ticker=symbol
-        )
+            # Merge with stock data
+            merged_data = pd.merge(symbol_stock, daily_sentiment,
+                                   left_on='Date', right_on='date', how='left')
+            merged_data = merged_data.fillna(0)
 
-        lstm_model.plot_multiple_graphs(ticker=symbol, output_dir=plots_dir)
+            # Run analysis for each feature combination
+            for variation, features in feature_combinations.items():
+                print(f"\nRunning {variation} variation...")
 
-        metrics = lstm_model.export()
-        metrics_file = os.path.join(lstm_dir, f'{symbol}_lstm_metrics.json')
-        with open(metrics_file, 'w') as f:
-            json.dump(metrics, f, indent=4)
+                # Create variation directory
+                variation_dir = os.path.join(lstm_dir, variation)
+                os.makedirs(variation_dir, exist_ok=True)
 
-        results[symbol] = {
-            'metrics': metrics,
-            'history': {
-                'loss': history.history['loss'],
-                'val_loss': history.history['val_loss']
-            }
-        }
+                # Prepare data based on variation
+                if 'no_clickbait' in variation:
+                    # Filter out days with clickbait
+                    filtered_data = merged_data[merged_data['is_potential_clickbait'] == 0].copy(
+                    )
+                else:
+                    filtered_data = merged_data.copy()
 
-        print(f"\nPrediction Accuracy for {symbol}:")
-        print(f"Training RMSE: {metrics['train_rmse']:.2f}")
-        print(f"Training MAE: {metrics['train_mae']:.2f}")
-        print(f"Test RMSE: {metrics['test_rmse']:.2f}")
-        print(f"Test MAE: {metrics['test_mae']:.2f}")
+                data = filtered_data[features].copy()
+
+                try:
+                    # Create variation directories
+                    model_dir = os.path.join(variation_dir, 'models')
+                    plots_dir = os.path.join(variation_dir, 'plots')
+                    os.makedirs(model_dir, exist_ok=True)
+                    os.makedirs(plots_dir, exist_ok=True)
+
+                    # Initialize and train model
+                    lstm = StockLSTM(data, filters=features)
+                    history = lstm.fit(
+                        lookback=10,
+                        train_size=0.8,
+                        epochs=300,
+                        model_dir=model_dir,
+                        ticker=symbol
+                    )
+
+                    # Save model explicitly
+                    model_path = os.path.join(
+                        model_dir, f'{symbol}_lstm_model.keras')
+                    lstm.model.save(model_path)
+
+                    # Generate and save plots
+                    metrics = lstm.plot_multiple_graphs(
+                        ticker=symbol, output_dir=plots_dir)
+
+                    # Store results
+                    if symbol not in results:
+                        results[symbol] = {}
+
+                    results[symbol][variation] = {
+                        'metrics': metrics,
+                        'history': {
+                            'loss': history.history['loss'],
+                            'val_loss': history.history['val_loss']
+                        },
+                        'data_points': len(data)
+                    }
+
+                    # Save individual results
+                    results_file = os.path.join(
+                        variation_dir, f'{symbol}_lstm_metrics.json')
+                    with open(results_file, 'w') as f:
+                        json.dump(results[symbol][variation], f, indent=4)
+
+                    print(f"\nResults for {symbol} - {variation}:")
+                    print(f"Training RMSE: {metrics['train_rmse']:.4f}")
+                    print(f"Training MAE: {metrics['train_mae']:.4f}")
+                    print(f"Test RMSE: {metrics['test_rmse']:.4f}")
+                    print(f"Test MAE: {metrics['test_mae']:.4f}")
+
+                except Exception as e:
+                    print(
+                        f"Error during {variation} analysis for {symbol}: {str(e)}")
+                    continue
+
+        except Exception as e:
+            print(f"Error processing {symbol}: {str(e)}")
+            continue
+
+    # Save all results
+    results_file = os.path.join(lstm_dir, 'lstm_results.json')
+    with open(results_file, 'w') as f:
+        json.dump(results, f, indent=4)
 
     return results
 
