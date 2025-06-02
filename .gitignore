@@ -71,7 +71,6 @@ config.yaml
 # Model files
 *.h5
 *.pkl
-*.joblib
 *.model
 
 # Documentation
@@ -80,4 +79,20 @@ site/
 
 # System Files
 .DS_Store
-Thumbs.db 
+Thumbs.db
+
+# Data files
+*.csv
+*.xlsx
+*.xls
+
+# Keep trained models and plots
+!results/knn_analysis/models/*.joblib
+!results/lstm_analysis/models/*.keras
+!results/lstm_analysis/plots/*.png
+!results/knn_analysis/plots/*.png
+
+# Exclude other results
+results/vader_analysis/
+results/knn_analysis/predictions/
+results/lstm_analysis/predictions/ 
