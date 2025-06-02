@@ -9,11 +9,9 @@ import seaborn as sns
 
 
 def load_lstm_results(ticker):
-    """Load LSTM results for a specific ticker."""
     base_path = Path('results/lstm_analysis')
     results = {}
 
-    # Load the main results file
     results_file = base_path / 'lstm_results.json'
     if not results_file.exists():
         print(f"Results file not found: {results_file}")
@@ -26,7 +24,6 @@ def load_lstm_results(ticker):
         print(f"No results found for {ticker}")
         return None
 
-    # Debug: Print the structure of the data
     print(f"\nData structure for {ticker}:")
     for variation, data in all_results[ticker].items():
         print(f"\nVariation: {variation}")
@@ -44,8 +41,6 @@ def load_lstm_results(ticker):
 
 
 def calculate_errors(predictions, actual):
-    """Calculate absolute prediction errors."""
-    # Convert nested predictions to flat array
     predictions_flat = np.array(
         [p[0] if isinstance(p, list) else p for p in predictions])
     actual_flat = np.array(actual)
@@ -53,12 +48,9 @@ def calculate_errors(predictions, actual):
 
 
 def perform_statistical_tests(ticker_results):
-    """Perform Kruskal-Wallis and KS tests on prediction errors."""
-    # Group variations by their prediction lengths
     length_groups = {}
     error_distributions = {}
 
-    # Calculate errors for each feature combination
     for variation, data in ticker_results.items():
         if 'metrics' in data and 'test_predictions' in data['metrics'] and 'test_actual' in data['metrics']:
             errors = calculate_errors(
@@ -82,7 +74,6 @@ def perform_statistical_tests(ticker_results):
         'error_stds': {var: float(np.std(errors)) for var, errors in error_distributions.items()}
     }
 
-    # Perform tests within each length group
     for length, variations in length_groups.items():
         if len(variations) >= 2:
             groups = [error_distributions[var] for var in variations]
@@ -103,14 +94,12 @@ def perform_statistical_tests(ticker_results):
                 'ks_tests': {}
             }
 
-            # Perform pairwise KS tests within the group
             for i, var1 in enumerate(variations):
                 for var2 in variations[i+1:]:
                     ks_stat, p_value_ks = stats.ks_2samp(
                         error_distributions[var1],
                         error_distributions[var2]
                     )
-                    # Convert numpy values to Python scalars
                     ks_stat = float(ks_stat.item() if hasattr(
                         ks_stat, 'item') else ks_stat)
                     p_value_ks = float(p_value_ks.item() if hasattr(
@@ -125,7 +114,6 @@ def perform_statistical_tests(ticker_results):
 
 
 def plot_error_distributions(ticker_results, ticker):
-    """Plot error distributions for different feature combinations."""
     error_distributions = {}
 
     for variation, data in ticker_results.items():
@@ -153,13 +141,11 @@ def plot_error_distributions(ticker_results, ticker):
 
 def save_results_to_csv(all_results, output_dir):
     """Save statistical test results to CSV files."""
-    # Prepare data for CSV
     kw_data = []
     ks_data = []
     error_data = []
 
     for ticker, results in all_results.items():
-        # Kruskal-Wallis test results
         for group_name, group_results in results['group_tests'].items():
             kw_data.append({
                 'Ticker': ticker,
@@ -169,7 +155,6 @@ def save_results_to_csv(all_results, output_dir):
                 'P_Value': group_results['kruskal_wallis']['p_value']
             })
 
-        # KS test results
         for group_name, group_results in results['group_tests'].items():
             for comparison, test_results in group_results['ks_tests'].items():
                 ks_data.append({
@@ -180,7 +165,6 @@ def save_results_to_csv(all_results, output_dir):
                     'P_Value': test_results['p_value']
                 })
 
-        # Error statistics
         for variation, mean in results['error_means'].items():
             error_data.append({
                 'Ticker': ticker,
@@ -189,7 +173,6 @@ def save_results_to_csv(all_results, output_dir):
                 'Std_Error': results['error_stds'][variation]
             })
 
-    # Convert to DataFrames and save
     pd.DataFrame(kw_data).to_csv(
         output_dir / 'kruskal_wallis_results.csv', index=False)
     pd.DataFrame(ks_data).to_csv(
@@ -199,11 +182,9 @@ def save_results_to_csv(all_results, output_dir):
 
 
 def main():
-    # Create output directory
     output_dir = Path('results/statistical_analysis')
     output_dir.mkdir(exist_ok=True)
 
-    # List of tickers to analyze
     tickers = ['AMD', 'INTC', 'JPM', 'BAC', 'JNJ', 'PFE']
 
     all_results = {}
@@ -211,22 +192,18 @@ def main():
     for ticker in tickers:
         print(f"\nAnalyzing {ticker}...")
 
-        # Load results
         ticker_results = load_lstm_results(ticker)
         if ticker_results is None:
             continue
 
-        # Perform statistical tests
         test_results = perform_statistical_tests(ticker_results)
         if test_results is None:
             continue
 
         all_results[ticker] = test_results
 
-        # Plot error distributions
         plot_error_distributions(ticker_results, ticker)
 
-        # Print results
         print(f"\nResults for {ticker}:")
 
         print("\nGroup Tests:")
@@ -249,11 +226,10 @@ def main():
             std = test_results['error_stds'][variation]
             print(f"{variation}: Mean = {mean:.4f}, Std = {std:.4f}")
 
-    # Save all results
     with open(output_dir / 'statistical_test_results.json', 'w') as f:
         json.dump(all_results, f, indent=4)
 
-    # Save results to CSV files
+
     save_results_to_csv(all_results, output_dir)
 
 
